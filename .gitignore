@@ -1,0 +1,16 @@
+# Runtime state and output — never in git (Slack messages, meeting notes, calendar).
+logs/
+board/slack.json
+board/health.json
+
+# Secrets live outside this folder (see README); listed so a copy can never be committed.
+.env
+.env.*
+*service-account*.json
+*.pem
+*.key
+
+__pycache__/
+*.pyc
+.DS_Store
+.claude/settings.local.json

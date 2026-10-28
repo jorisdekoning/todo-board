@@ -1,0 +1,44 @@
+# Slack app manifest for the todo-board sync.
+#
+# Create at https://api.slack.com/apps -> Create New App -> From an app manifest
+# -> pick the TicketSwap workspace -> paste this file.
+#
+# Read-only by design: no bot user, no event subscriptions, no request URL,
+# and no chat:write, so this token can never post anything as Joris.
+#
+# After install: copy the *User* OAuth Token (xoxp-...) into the login Keychain:
+#   security add-generic-password -a "$USER" -s slack-todo-sync -w
+# Never commit the token. The sync reads it the same way disco_sync.py reads
+# the Disco token, and must run under launchd (not cron) so it can reach the
+# Keychain inside the GUI session.
+
+_metadata:
+  major_version: 1
+  minor_version: 1
+
+display_information:
+  name: "Joris Todo Sync"
+  # Quoted because the colon-space inside ":todo: reactions" would otherwise
+  # parse as a nested mapping and Slack rejects the upload.
+  description: "Reads my :todo: reactions and mentions to build a personal todo board"
+  background_color: "#2743e8"
+
+oauth_config:
+  scopes:
+    user:
+      # find messages I tagged :todo:, and messages that mention me
+      - search:read
+      # read reactions, so a checkmark from anyone closes the card
+      - reactions:read
+      # stamp :todo_added: / :todo_done: back onto the message as confirmation
+      - reactions:write
+      # decide whether I already replied to a mention, so answered ones are not todos
+      - channels:history
+      - groups:history
+      - im:history
+      - mpim:history
+
+settings:
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

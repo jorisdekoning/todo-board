@@ -1,0 +1,3016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="__disco.js"></script>
+<title>Todo board</title>
+
+<style>
+  :root {
+    --bg:        #F5F6FB;
+    --bg-2:      #EDEFF7;
+    --panel:     #FFFFFF;
+    --panel-2:   #FAFBFE;
+    --line:      #E3E6F0;
+    --line-soft: #EDEFF6;
+    --ink:       #0D101E;
+    --ink-2:     #414761;
+    --ink-3:     #6A7189;
+    --ink-4:     #9AA1BA;
+    --indigo:    #3A57DE;
+    --indigo-bg: #EAEEFE;
+    --rose:      #D3382E;
+    --rose-bg:   #FCEAE8;
+    --amber:     #A46A08;
+    --amber-bg:  #FAF0DC;
+    --teal:      #078A6F;
+    --teal-bg:   #E0F3EE;
+    --slate:     #6A7189;
+    --slate-bg:  #EDEFF6;
+    --violet:    #6842C6;
+    --violet-bg: #F0EAFC;
+    --card-shadow: 0 1px 2px rgba(13,16,30,.04), 0 6px 18px -6px rgba(13,16,30,.10);
+    --card-lift:   0 2px 5px rgba(13,16,30,.07), 0 18px 38px -12px rgba(13,16,30,.20);
+    --edge: none;
+    --sans: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:        #080A11;
+      --bg-2:      #0C0F18;
+      --panel:     #141824;
+      --panel-2:   #191E2C;
+      --line:      #262C3C;
+      --line-soft: #1D2230;
+      --ink:       #F1F3FA;
+      --ink-2:     #BFC5D9;
+      --ink-3:     #8990A8;
+      --ink-4:     #646B84;
+      --indigo:    #8AA0FF;
+      --indigo-bg: #1B2340;
+      --rose:      #FF7A6C;
+      --rose-bg:   #351E1C;
+      --amber:     #E8B45E;
+      --amber-bg:  #302512;
+      --teal:      #45CFAB;
+      --teal-bg:   #102E28;
+      --slate:     #8990A8;
+      --slate-bg:  #1E2331;
+      --card-shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px -8px rgba(0,0,0,.6);
+      --card-lift:   0 3px 8px rgba(0,0,0,.5), 0 22px 46px -14px rgba(0,0,0,.75);
+      --edge: inset 0 1px 0 rgba(255,255,255,.045);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg:        #080A11;
+    --bg-2:      #0C0F18;
+    --panel:     #141824;
+    --panel-2:   #191E2C;
+    --line:      #262C3C;
+    --line-soft: #1D2230;
+    --ink:       #F1F3FA;
+    --ink-2:     #BFC5D9;
+    --ink-3:     #8990A8;
+    --ink-4:     #646B84;
+    --indigo:    #8AA0FF;
+    --indigo-bg: #1B2340;
+    --rose:      #FF7A6C;
+    --rose-bg:   #351E1C;
+    --amber:     #E8B45E;
+    --amber-bg:  #302512;
+    --teal:      #45CFAB;
+    --teal-bg:   #102E28;
+    --slate:     #8990A8;
+    --slate-bg:  #1E2331;
+    --violet:    #B79BF7;
+    --violet-bg: #241D3D;
+    --card-shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 22px -8px rgba(0,0,0,.6);
+    --card-lift:   0 3px 8px rgba(0,0,0,.5), 0 22px 46px -14px rgba(0,0,0,.75);
+    --edge: inset 0 1px 0 rgba(255,255,255,.045);
+  }
+
+  :root[data-theme="light"] {
+    --bg:        #F5F6FB;
+    --bg-2:      #EDEFF7;
+    --panel:     #FFFFFF;
+    --panel-2:   #FAFBFE;
+    --line:      #E3E6F0;
+    --line-soft: #EDEFF6;
+    --ink:       #0D101E;
+    --ink-2:     #414761;
+    --ink-3:     #6A7189;
+    --ink-4:     #9AA1BA;
+    --indigo:    #3A57DE;
+    --indigo-bg: #EAEEFE;
+    --rose:      #D3382E;
+    --rose-bg:   #FCEAE8;
+    --amber:     #A46A08;
+    --amber-bg:  #FAF0DC;
+    --teal:      #078A6F;
+    --teal-bg:   #E0F3EE;
+    --slate:     #6A7189;
+    --slate-bg:  #EDEFF6;
+    --violet:    #6842C6;
+    --violet-bg: #F0EAFC;
+    --card-shadow: 0 1px 2px rgba(13,16,30,.04), 0 6px 18px -6px rgba(13,16,30,.10);
+    --card-lift:   0 2px 5px rgba(13,16,30,.07), 0 18px 38px -12px rgba(13,16,30,.20);
+    --edge: none;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 520px at 12% -8%, color-mix(in srgb, var(--indigo) 9%, transparent), transparent 70%),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .wrap { padding: 34px 28px 60px; max-width: 1720px; margin: 0 auto; }
+
+  /* ============ masthead ============ */
+
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 32px;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 11px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .eyebrow i {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+    font-style: normal;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(30px, 4.6vw, 46px);
+    font-weight: 780;
+    letter-spacing: -.035em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .lede {
+    margin: 13px 0 0;
+    max-width: 62ch;
+    color: var(--ink-3);
+    font-size: 14.5px;
+  }
+  .lede a {
+    color: var(--indigo);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--indigo) 35%, transparent);
+  }
+  .lede a:hover { border-bottom-color: var(--indigo); }
+
+  .tools { display: flex; align-items: center; gap: 8px; }
+
+  .shared {
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--ink-4);
+    padding: 7px 10px; border-radius: 7px; border: 1px dashed var(--line);
+  }
+  .shared.on { color: var(--teal); border-style: solid; border-color: color-mix(in srgb, var(--teal) 40%, transparent); }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    box-shadow: var(--edge);
+    transition: border-color .16s, color .16s, background .16s;
+  }
+  .btn:hover { border-color: var(--ink-4); color: var(--ink); }
+  .btn[aria-pressed="true"] {
+    background: var(--indigo-bg);
+    border-color: color-mix(in srgb, var(--indigo) 40%, transparent);
+    color: var(--indigo);
+  }
+  .btn:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+  /* ============ stat row ============ */
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+    gap: 12px;
+    margin: 28px 0 0;
+  }
+
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    padding: 15px 17px 14px;
+    box-shadow: var(--card-shadow), var(--edge);
+    min-width: 0;
+  }
+  .stat-k {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .stat-v {
+    font-size: 27px;
+    font-weight: 750;
+    letter-spacing: -.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .stat-v u {
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--ink-3);
+  }
+  .stat-n { margin: 8px 0 0; font-size: 11.5px; color: var(--ink-3); line-height: 1.35; }
+  .stat.t-rose  .stat-v { color: var(--rose); }
+  .stat.t-amber .stat-v { color: var(--amber); }
+  .stat.t-teal  .stat-v { color: var(--teal); }
+
+  /* proportional ribbon */
+  .ribbon { margin: 22px 0 0; }
+  .ribbon-bar {
+    display: flex;
+    gap: 3px;
+    height: 7px;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .ribbon-bar span { border-radius: 20px; transition: flex-grow .3s; min-width: 5px; }
+  .ribbon-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin: 11px 0 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .ribbon-key b { display: inline-flex; align-items: center; gap: 7px; font-weight: 400; }
+  .ribbon-key i { width: 7px; height: 7px; border-radius: 2px; font-style: normal; }
+  .ribbon-key em { font-style: normal; color: var(--ink-4); font-variant-numeric: tabular-nums; }
+
+  /* ============ agenda ============ */
+
+  .agenda {
+    display: flex;
+    align-items: stretch;
+    gap: 9px;
+    margin: 26px 0 0;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: thin;
+  }
+  .agenda-k {
+    flex: 0 0 auto;
+    align-self: center;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    padding-right: 3px;
+  }
+  .ev {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 13px 8px 9px;
+    text-decoration: none;
+    box-shadow: var(--edge);
+    transition: border-color .16s, box-shadow .16s, transform .16s;
+  }
+  .ev:hover { border-color: color-mix(in srgb, var(--indigo) 50%, transparent); box-shadow: var(--card-shadow); transform: translateY(-1px); }
+  .ev:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .ev-day {
+    flex: 0 0 auto;
+    width: 30px;
+    display: grid;
+    place-items: center;
+    background: var(--indigo-bg);
+    color: var(--indigo);
+    border-radius: 7px;
+    padding: 4px 0;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    line-height: 1.35;
+  }
+  .ev-day b { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+  .ev-t { font-size: 13.5px; color: var(--ink-2); white-space: nowrap; }
+  .ev.past { opacity: .45; }
+  .ev.past .ev-day { background: var(--slate-bg); color: var(--ink-3); }
+  .ev.past .ev-t { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+  /* ============ board ============ */
+
+  .debugbox {
+    margin: 26px 0 0; padding: 16px; border-radius: 11px;
+    background: var(--panel); border: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; line-height: 1.5;
+    color: var(--ink-2); overflow-x: auto;
+  }
+
+  .hiding {
+    display: flex; align-items: center; gap: 12px;
+    margin: 22px 0 0; padding: 10px 15px;
+    background: var(--amber-bg); border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+    border-radius: 11px; font-size: 13px; color: var(--amber);
+  }
+  .hiding[hidden] { display: none; }
+  .hiding button {
+    margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--amber); background: transparent;
+    border: 1px solid color-mix(in srgb, var(--amber) 50%, transparent);
+    border-radius: 7px; padding: 6px 11px; cursor: pointer;
+  }
+  .hiding button:hover { background: var(--panel); }
+
+  /* Merge bars use the indigo accent, not amber: amber means "something is being
+     kept from you", and these are an action in progress, not a warning. */
+  .mergebar, .dupbar {
+    background: color-mix(in srgb, var(--indigo) 10%, transparent);
+    border-color: color-mix(in srgb, var(--indigo) 40%, transparent);
+    color: var(--indigo);
+  }
+  .mergebar button, .dupbar button {
+    color: var(--indigo); border-color: color-mix(in srgb, var(--indigo) 45%, transparent);
+  }
+  /* While picking a merge target, the ⧉ buttons are what matters — lift them and
+     damp the rest of each card so the next click is obvious. */
+  body.merging .card .ctl button[data-a="m"] {
+    background: var(--indigo); color: #fff; border-color: var(--indigo);
+  }
+  body.merging .card { opacity: .72; }
+  body.merging .card:hover { opacity: 1; }
+  .card.dup { box-shadow: 0 0 0 2px color-mix(in srgb, var(--indigo) 55%, transparent); }
+
+  .mrg { font-size: 12px; }
+  .mfrom {
+    margin: 10px 0 0; padding: 9px 11px; border-radius: 9px;
+    background: color-mix(in srgb, var(--indigo) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--indigo) 22%, transparent);
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .mfrom-h {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--indigo);
+  }
+  .mfrom-i {
+    display: flex; align-items: flex-start; gap: 7px;
+    font-size: 12px; line-height: 1.45; color: var(--ink-2);
+  }
+  .mfrom-l {
+    color: var(--ink-2); text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--indigo) 30%, transparent);
+  }
+  .mfrom-l:hover { color: var(--indigo); border-bottom-color: var(--indigo); }
+  .mfrom-l .arrow { margin-left: 4px; font-size: 10px; opacity: .7; }
+  .mfrom-i button {
+    margin-left: auto; flex: 0 0 auto; background: transparent; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 6px; color: var(--ink-3);
+    font-size: 11px; padding: 1px 6px;
+  }
+  .mfrom-i button:hover { color: var(--indigo); border-color: var(--indigo); }
+
+  .ask { margin: 26px 0 0; }
+  .ask-row { display: flex; gap: 8px; }
+  .ask-row input {
+    flex: 1 1 auto; min-width: 0;
+    font-family: var(--sans); font-size: 14px; color: var(--ink);
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .ask-row input:focus-visible { outline: 2px solid var(--indigo); outline-offset: 1px; }
+  .ask-row button {
+    flex: 0 0 auto; font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: #fff; background: var(--indigo);
+    border: 0; border-radius: 10px; padding: 0 20px; cursor: pointer;
+  }
+  .ask-row button[disabled] { opacity: .55; cursor: default; }
+  .ask-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+  .ask-chips button {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .06em;
+    color: var(--ink-3); background: transparent; border: 1px solid var(--line);
+    border-radius: 999px; padding: 5px 11px; cursor: pointer;
+  }
+  .ask-chips button:hover { border-color: var(--indigo); color: var(--indigo); }
+  .ask-out {
+    margin: 12px 0 0; padding: 16px 18px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 11px;
+    font-size: 14px; line-height: 1.6; color: var(--ink-2); white-space: pre-wrap;
+  }
+  .ask-out[hidden] { display: none; }
+  .ask-foot {
+    display: flex; align-items: center; gap: 10px; margin: 8px 0 0;
+    font-family: var(--mono); font-size: 10px; color: var(--ink-4);
+  }
+  .ask-foot[hidden] { display: none; }
+  .ask-foot button {
+    margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-2); background: transparent;
+    border: 1px solid var(--line); border-radius: 7px; padding: 5px 10px; cursor: pointer;
+  }
+
+  .tabs { display: flex; gap: 6px; margin: 26px 0 -6px; }
+  .tab {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-3); background: transparent; border: 1px solid transparent;
+    border-radius: 8px; padding: 8px 13px; cursor: pointer;
+    transition: color .15s, background .15s, border-color .15s;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.is-on { color: var(--ink); background: var(--panel); border-color: var(--line); box-shadow: var(--edge); }
+  .tab:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .tab span { color: var(--ink-4); }
+
+  .archive { margin: 26px 0 0; }
+  .archive[hidden] { display: none; }
+  .arch-month {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-4); margin: 22px 0 10px; padding-bottom: 7px; border-bottom: 1px solid var(--line);
+  }
+  .arch-row {
+    display: flex; align-items: baseline; gap: 14px;
+    padding: 9px 2px; border-bottom: 1px solid var(--line-soft); font-size: 13.5px;
+  }
+  .arch-row .arch-date {
+    flex: 0 0 104px; text-align: left; background: transparent;
+    border-color: transparent; color: var(--ink-4);
+  }
+  .arch-row:hover .arch-date { border-color: var(--line); background: var(--panel-2); }
+  .arch-row .pri {
+    flex: 0 0 auto; cursor: default; pointer-events: none; padding: 2px 6px; font-size: 9px;
+  }
+  .arch-row .what { color: var(--ink); flex: 1 1 auto; min-width: 0; }
+  .arch-row .src { font-family: var(--mono); font-size: 9.5px; color: var(--ink-4); flex: 0 0 auto; }
+  .arch-row a { color: var(--indigo); text-decoration: none; font-family: var(--mono); font-size: 9.5px; }
+  .arch-empty { color: var(--ink-3); font-size: 13.5px; padding: 18px 2px; }
+
+  .board[hidden], .stats[hidden], .ribbon[hidden], .agenda[hidden], .health[hidden] { display: none; }
+
+  .board {
+    display: flex;
+    gap: 15px;
+    margin: 30px 0 0;
+    overflow-x: auto;
+    align-items: flex-start;
+    padding: 3px 3px 20px;
+    scrollbar-width: thin;
+  }
+
+  .col {
+    --c: var(--slate);
+    --c-bg: var(--slate-bg);
+    flex: 0 0 312px;
+    background: var(--bg-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color .16s, background .16s;
+  }
+  .col[hidden] { display: none; }
+  .col.over {
+    border-color: color-mix(in srgb, var(--c) 60%, transparent);
+    background: color-mix(in srgb, var(--c) 7%, var(--bg-2));
+  }
+
+  .col-h {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    padding: 15px 16px 12px;
+    background: color-mix(in srgb, var(--bg-2) 88%, transparent);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    border-radius: 15px 15px 0 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .col-h h2 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12.5px;
+    font-weight: 650;
+    letter-spacing: -.005em;
+    color: var(--ink);
+  }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--c);
+    flex: 0 0 auto;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 15%, transparent);
+  }
+  .n {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-variant-numeric: tabular-nums;
+    color: var(--c);
+    background: var(--c-bg);
+    border-radius: 20px;
+    padding: 2px 8px;
+  }
+  .col-sub { margin: 8px 0 0; font-size: 11.5px; color: var(--ink-4); }
+
+  .stack { display: flex; flex-direction: column; gap: 10px; padding: 12px; flex: 1 1 auto; min-height: 26px; }
+
+  .col-f { padding: 0 12px 12px; }
+  .add {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--ink-4);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color .16s, color .16s, background .16s;
+  }
+  .add:hover { border-color: var(--c); color: var(--c); background: var(--c-bg); }
+  .archivenow { margin-top: 6px; }
+  .add:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+  /* ============ card ============ */
+
+  .card {
+    position: relative;
+    cursor: grab;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 15px 12px 17px;
+    box-shadow: var(--card-shadow), var(--edge);
+    cursor: grab;
+    overflow: hidden;
+    animation: rise .36s cubic-bezier(.2,.75,.3,1) both;
+    animation-delay: calc(var(--i, 0) * 24ms);
+    transition: box-shadow .18s, transform .18s, border-color .18s;
+  }
+  .board.booted .card { animation: none; }
+  .card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 12px; bottom: 12px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(to bottom, var(--c), color-mix(in srgb, var(--c) 15%, transparent));
+  }
+  .card:hover { box-shadow: var(--card-lift), var(--edge); transform: translateY(-2px); }
+  .card:active { cursor: grabbing; }
+  .card.drag { opacity: .4; }
+  .card:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .card.drag { opacity: .4; cursor: grabbing; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+
+  .c-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .grip {
+    flex: 0 0 auto; cursor: grab; color: var(--ink-4);
+    font-size: 12px; line-height: 1; letter-spacing: -1px;
+    padding: 2px 1px; border-radius: 4px; user-select: none;
+  }
+  .grip:hover { color: var(--ink-2); background: var(--slate-bg); }
+  .grip:active { cursor: grabbing; }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--c);
+    background: var(--c-bg);
+    border-radius: 5px;
+    padding: 3px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .due {
+    margin-left: auto;
+    flex: 0 0 auto;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .04em;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .due.hot { color: var(--rose); font-weight: 600; }
+  .due.late { color: var(--rose); font-weight: 700; background: var(--rose-bg); border-radius: 5px; padding: 2px 6px; }
+  .due.soon { color: var(--amber); font-weight: 700; background: var(--amber-bg); border-radius: 5px; padding: 2px 6px; }
+  .card.is-soon::before { background: var(--amber); }
+  .card.is-late::before { background: var(--rose); }
+
+  .gaps {
+    margin: 20px 0 0; padding: 13px 16px;
+    border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+    background: var(--amber-bg); border-radius: 11px;
+  }
+  .gaps[hidden] { display: none; }
+  .gaps h3 {
+    margin: 0 0 9px; font-family: var(--mono); font-size: 9.5px;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--amber); font-weight: 600;
+  }
+  .gaps a {
+    display: inline-flex; align-items: baseline; gap: 7px;
+    margin: 0 8px 5px 0; padding: 4px 9px;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 7px; font-size: 12.5px; color: var(--ink-2); text-decoration: none;
+  }
+  .gaps a:hover { border-color: var(--amber); }
+  .gaps a b { font-family: var(--mono); font-size: 10px; color: var(--ink-4); font-weight: 500; }
+
+  .health {
+    display: flex; align-items: center; gap: 10px;
+    margin: 20px 0 0; padding: 11px 15px;
+    border-radius: 11px; border: 1px solid var(--line);
+    background: var(--panel); box-shadow: var(--edge);
+    font-size: 13px; color: var(--ink-2);
+  }
+  .health b { font-weight: 650; color: var(--ink); }
+  .health .pulse {
+    width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto;
+    background: var(--teal); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 20%, transparent);
+  }
+  .health .meta { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--ink-4); }
+  .health.warn { border-color: color-mix(in srgb, var(--amber) 50%, transparent); background: var(--amber-bg); color: var(--amber); }
+  .health.warn .pulse { background: var(--amber); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber) 20%, transparent); }
+  .health.warn b { color: var(--amber); }
+  .health.bad { border-color: color-mix(in srgb, var(--rose) 55%, transparent); background: var(--rose-bg); color: var(--rose); }
+  .health.bad .pulse { background: var(--rose); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rose) 20%, transparent); }
+  .health.bad b { color: var(--rose); }
+  .due.hot::before { content: "▲ "; font-size: 7px; vertical-align: 1px; }
+
+  /* priority — a monochrome intensity ramp, so it never fights the column hues */
+  .pri {
+    flex: 0 0 auto;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    border-radius: 5px;
+    padding: 3px 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: var(--slate-bg);
+    color: var(--ink-3);
+    transition: border-color .15s, background .15s, color .15s;
+  }
+  .pri:hover { border-color: var(--ink-4); }
+  .pri:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .pri[data-p="1"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .pri[data-p="2"] { background: transparent; border-color: var(--ink-3); color: var(--ink); }
+  .pri[data-p="3"] { background: var(--slate-bg); color: var(--ink-2); }
+  .pri[data-p="4"] { background: transparent; border-color: var(--line); color: var(--ink-4); }
+  .pri[data-p="5"] { background: transparent; border-color: var(--line-soft); color: var(--ink-4); opacity: .7; }
+
+  .pick { display: flex; gap: 4px; margin: 10px 0 0; }
+  .pick[hidden] { display: none; }
+  .pick button {
+    flex: 1 1 0;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .03em;
+    padding: 5px 0;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .pick button:hover { border-color: var(--ink-4); color: var(--ink); }
+  .pick button[aria-current="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .pick button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 1px; }
+
+  .c-title {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 660;
+    letter-spacing: -.014em;
+    line-height: 1.3;
+    color: var(--ink);
+    text-wrap: pretty;
+  }
+  .c-title[contenteditable="true"] { outline: 2px solid var(--indigo); outline-offset: 3px; border-radius: 4px; }
+
+  .checks { margin: 11px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .checks li {
+    display: flex;
+    gap: 8px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--ink-2);
+  }
+  .tick {
+    flex: 0 0 auto;
+    width: 13px; height: 13px;
+    margin-top: 3px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink-4);
+    background: transparent;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .tick:hover { border-color: var(--teal); }
+  .tick:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .checks li.ok { color: var(--ink-4); }
+  .checks li.ok .txt { text-decoration: line-through; text-decoration-color: var(--ink-4); }
+  .checks li.ok .tick {
+    border-color: var(--teal);
+    background: var(--teal);
+    box-shadow: inset 0 0 0 1.5px var(--panel);
+  }
+  .txt { flex: 1 1 auto; cursor: text; border-radius: 3px; min-width: 0; }
+  .txt:hover { background: var(--panel-2); box-shadow: 0 0 0 3px var(--panel-2); }
+  .txt[contenteditable="true"] {
+    outline: 2px solid var(--indigo);
+    outline-offset: 2px;
+    background: none;
+    box-shadow: none;
+    cursor: auto;
+  }
+
+  .idel {
+    flex: 0 0 auto;
+    width: 16px; height: 16px;
+    margin-top: 1px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 4px;
+    color: var(--ink-4);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s, color .15s;
+  }
+  .checks li:hover .idel { opacity: 1; }
+  .idel:hover { color: var(--rose); }
+  .idel:focus-visible { opacity: 1; outline: 2px solid var(--indigo); outline-offset: 1px; }
+
+  .prog {
+    margin-left: auto;
+    flex: 0 0 auto;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .04em;
+    color: var(--ink-4);
+    font-variant-numeric: tabular-nums;
+  }
+  .prog.full { color: var(--teal); }
+
+  .additem {
+    margin: 9px 0 0;
+    padding: 3px 0;
+    background: none;
+    border: 0;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s, color .15s;
+  }
+  .card:hover .additem, .card:focus-within .additem { opacity: 1; }
+  .additem:hover { color: var(--indigo); }
+  .additem:focus-visible { opacity: 1; outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+  .donerow {
+    display: flex; align-items: center; gap: 8px; margin-top: 11px;
+  }
+  .donerow label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-4);
+  }
+  .datebtn {
+    font-family: var(--mono); font-size: 10.5px; color: var(--ink-2);
+    background: var(--panel-2); border: 1px solid var(--line-soft);
+    border-radius: 6px; padding: 3px 7px; cursor: pointer;
+  }
+  .datebtn:hover { border-color: var(--indigo); color: var(--indigo); }
+  .datebtn:focus-visible { outline: 2px solid var(--indigo); outline-offset: 1px; }
+
+  .waiting {
+    margin: 10px 0 0; padding: 7px 10px;
+    font-size: 11.5px; color: var(--amber);
+    background: var(--amber-bg); border-radius: 8px;
+  }
+  .waiting b { font-weight: 700; }
+
+  .why {
+    margin: 12px 0 0;
+    padding: 9px 11px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--ink-3);
+    background: var(--panel-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+  }
+  .why b { color: var(--ink-2); font-weight: 650; }
+
+  .avs { display: flex; align-items: center; margin-top: 12px; }
+  .av {
+    width: 23px; height: 23px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0;
+    border: 1.5px solid var(--panel);
+    margin-right: -6px;
+  }
+  .av:last-child { margin-right: 0; }
+  .av-1 { background: var(--indigo-bg); color: var(--indigo); }
+  .av-2 { background: var(--teal-bg);   color: var(--teal); }
+  .av-3 { background: var(--amber-bg);  color: var(--amber); }
+  .av-4 { background: var(--slate-bg);  color: var(--ink-3); }
+  .av-5 { background: var(--rose-bg);   color: var(--rose); }
+
+  .c-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 13px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .source {
+    display: flex; align-items: center; gap: 7px;
+    margin-top: 11px; padding: 7px 10px;
+    background: var(--panel-2); border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .04em;
+    color: var(--indigo); text-decoration: none;
+    transition: border-color .15s, background .15s;
+  }
+  .source:hover { border-color: color-mix(in srgb, var(--indigo) 45%, transparent); background: var(--indigo-bg); }
+  .source:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .source b { font-weight: 600; }
+  .source .arrow { margin-left: auto; color: var(--ink-4); }
+
+  .refs { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
+  .ref {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .03em;
+    color: var(--ink-3);
+    text-decoration: none;
+    background: var(--panel-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 6px;
+    padding: 3.5px 7px;
+    white-space: nowrap;
+    transition: color .15s, border-color .15s;
+  }
+  .ref:hover { color: var(--indigo); border-color: color-mix(in srgb, var(--indigo) 45%, transparent); }
+  .ref:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .ref::after { content: " ↗"; color: var(--ink-4); }
+
+  .ctl { display: flex; gap: 3px; margin-left: auto; flex: 0 0 auto; opacity: 0; transition: opacity .16s; }
+  .card:hover .ctl, .card:focus-within .ctl { opacity: 1; }
+  .ctl button {
+    width: 23px; height: 23px;
+    display: grid; place-items: center;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink-3);
+    font-size: 11px;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .ctl button:hover { border-color: var(--indigo); color: var(--indigo); }
+  .ctl button.x:hover { border-color: var(--rose); color: var(--rose); }
+  .ctl button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 1px; }
+
+  /* ============ footer ============ */
+
+  .foot {
+    margin: 36px 0 0;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px 40px;
+  }
+  .foot h3 {
+    margin: 0 0 11px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .srcs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .srcs a {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-2);
+    text-decoration: none;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 6px 10px;
+    box-shadow: var(--edge);
+    transition: border-color .15s, color .15s, transform .15s;
+  }
+  .srcs a:hover { border-color: var(--indigo); color: var(--indigo); transform: translateY(-1px); }
+  .srcs a:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .help { font-size: 12.5px; color: var(--ink-3); line-height: 1.55; margin: 0; max-width: 46ch; }
+  kbd {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 1.5px 5px;
+    color: var(--ink-2);
+  }
+  #warn { color: var(--amber); }
+
+  @media (max-width: 680px) {
+    .wrap { padding: 24px 16px 46px; }
+    .col { flex-basis: 86vw; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+    .card:hover, .ev:hover, .srcs a:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="eyebrow"><i></i> TicketSwap · Partnerships &amp; Lead Gen</p>
+      <h1>Todo board</h1>
+      <p class="lede">
+        Everything on my plate right now, ranked P1 to P5. Lead Gen is the main focus; the rest runs alongside it.
+        Every card links back to the
+        <a href="https://ticketswap.slack.com/archives/D07V5K98CMA/p1785933161803559" target="_blank" rel="noopener">thread</a>,
+        meeting or dashboard it came from — and anything I tag <b>:todo:</b> in Slack lands in the first column.
+      </p>
+    </div>
+    <div class="tools">
+      <button class="btn" id="theme" title="Switch light / dark">Theme: auto</button>
+      <span class="shared" id="shared">Checking…</span>
+      <button class="btn" id="undo" title="Step back one change">Undo</button>
+      <button class="btn" id="export" title="Copy your board state as JSON">Export</button>
+      <button class="btn" id="filterTop" aria-pressed="false">P1 + P2 only</button>
+      <button class="btn" id="hide" aria-pressed="false">Hide shipped</button>
+      <button class="btn" id="reset">Reset</button>
+    </div>
+  </header>
+
+  <section class="stats" aria-label="Summary">
+    <div class="stat">
+      <span class="stat-k">Live streams</span>
+      <span class="stat-v">9</span>
+      <p class="stat-n">Lead Gen is the main focus</p>
+    </div>
+    <div class="stat t-rose">
+      <span class="stat-k">Late</span>
+      <span class="stat-v" id="sLate">0</span>
+      <p class="stat-n">Past its date, still open</p>
+    </div>
+    <div class="stat t-rose">
+      <span class="stat-k">P1 open</span>
+      <span class="stat-v" id="sP1">0</span>
+      <p class="stat-n">Drop-everything work</p>
+    </div>
+    <div class="stat t-rose">
+      <span class="stat-k">Due this week</span>
+      <span class="stat-v" id="sWeek">0</span>
+      <p class="stat-n">HubSpot basics &amp; promotion targets</p>
+    </div>
+    <div class="stat t-amber">
+      <span class="stat-k">Blocked</span>
+      <span class="stat-v" id="sBlocked">0</span>
+      <p class="stat-n">Data team, Adrian, one decision</p>
+    </div>
+    <div class="stat">
+      <span class="stat-k">Hard deadline</span>
+      <span class="stat-v">15 <u>Aug</u></span>
+      <p class="stat-n">Apollo live, training the week after</p>
+    </div>
+    <div class="stat t-teal">
+      <span class="stat-k">Shipped recently</span>
+      <span class="stat-v" id="sDone">0</span>
+      <p class="stat-n" id="synced">Last two weeks</p>
+    </div>
+  </section>
+
+  <section class="gaps" id="gaps" hidden>
+    <h3>Meetings from the last fortnight with no note</h3>
+    <div id="gapList"></div>
+  </section>
+
+  <section class="health" id="health" hidden aria-live="polite">
+    <span class="pulse"></span>
+    <span id="healthText">Checking sync…</span>
+    <span class="meta" id="healthMeta"></span>
+  </section>
+
+  <section class="ribbon" aria-label="Distribution across states">
+    <div class="ribbon-bar" id="bar"></div>
+    <div class="ribbon-key" id="key"></div>
+  </section>
+
+  <nav class="agenda" aria-label="This week's meetings">
+    <span class="agenda-k">Agenda</span>
+    <a class="ev past" target="_blank" rel="noopener" href="https://www.google.com/calendar/event?eid=cmNldWN1ZGtlZXVyaHZwNjk5OWRtM20yMHFfMjAyNjA4MTFUMDczMDAwWiBqb3Jpcy5kZWtvbmluZ0B0aWNrZXRzd2FwLmNvbQ&amp;ctz=Europe/Amsterdam">
+      <span class="ev-day">Tue<b>09:30</b></span><span class="ev-t">Tuesday Morning Meeting</span></a>
+    <a class="ev" target="_blank" rel="noopener" href="https://www.google.com/calendar/event?eid=NmFyYzJiN29sM3NtcDFrbmFxb3Ruc3Zvcjggam9yaXMuZGVrb25pbmdAdGlja2V0c3dhcC5jb20&amp;ctz=Europe/Amsterdam">
+      <span class="ev-day">Tue<b>14:00</b></span><span class="ev-t">Nikki + Sean · development plan</span></a>
+    <a class="ev" target="_blank" rel="noopener" href="https://www.google.com/calendar/event?eid=NjJ2ZWthamxvNHR0b2k2aW1rNGxoMmxmZWFfMjAyNjA4MTRUMTEzMDAwWiBqb3Jpcy5kZWtvbmluZ0B0aWNrZXRzd2FwLmNvbQ&amp;ctz=Europe/Amsterdam">
+      <span class="ev-day">Fri<b>13:30</b></span><span class="ev-t">Sean · HubSpot structuring</span></a>
+    <a class="ev past" target="_blank" rel="noopener" href="https://www.google.com/calendar/event?eid=NnZwNDlwbWhrNDVzZnJtMGMyanM0ZTE5bGZfMjAyNjA4MTRUMTIzMDAwWiBqb3Jpcy5kZWtvbmluZ0B0aWNrZXRzd2FwLmNvbQ&amp;ctz=Europe/Amsterdam">
+      <span class="ev-day">Fri<b>14:30</b></span><span class="ev-t">Oscar · declined, paternity leave</span></a>
+    <a class="ev" target="_blank" rel="noopener" href="https://www.google.com/calendar/event?eid=ZGxqZGIyMThvcWE4bTg2ZTA0dm05MmM0OGpfMjAyNjA4MTRUMTMwMDAwWiBqb3Jpcy5kZWtvbmluZ0B0aWNrZXRzd2FwLmNvbQ&amp;ctz=Europe/Amsterdam">
+      <span class="ev-day">Fri<b>15:00</b></span><span class="ev-t">Weekly wrap-up Benelux</span></a>
+  </nav>
+
+  <div class="hiding" id="hiding" hidden>
+    <span id="hidingText"></span>
+    <button type="button" id="showAll">Show everything</button>
+  </div>
+
+  <div class="hiding mergebar" id="mergebar" hidden>
+    <span></span>
+    <button type="button" id="mergeCancel">Cancel</button>
+  </div>
+
+  <div class="hiding dupbar" id="dupbar" hidden>
+    <span id="dupText"></span>
+    <button type="button" id="dupShow">Show me</button>
+  </div>
+
+  <section class="ask">
+    <div class="ask-row">
+      <input id="askQ" type="text" autocomplete="off"
+             placeholder="Ask about the board — e.g. group the HubSpot items and write them up for me">
+      <button id="askGo" type="button">Ask</button>
+    </div>
+    <div class="ask-chips">
+      <button type="button" data-brief="hubspot" data-ask="Group the HubSpot items together and structure them as a message I can paste into Slack.">HubSpot, written up</button>
+      <button type="button" data-brief="late" data-ask="What is late or due this week, and what should I do first? Be specific about which card.">What is late</button>
+      <button type="button" data-brief="waiting" data-ask="What am I waiting on other people for, and who do I need to chase?">Waiting on others</button>
+      <button type="button" data-brief="streams" data-ask="Group everything by stream or system, with a one-line status per group.">Group by stream</button>
+    </div>
+    <div class="ask-out" id="askOut" hidden></div>
+    <div class="ask-foot" id="askFoot" hidden>
+      <span id="askMeta"></span>
+      <button type="button" id="askCopy">Copy</button>
+    </div>
+  </section>
+
+  <nav class="tabs" aria-label="Views">
+    <button class="tab is-on" id="tabBoard" aria-pressed="true">Board</button>
+    <button class="tab" id="tabArchive" aria-pressed="false">Archive <span id="archN">0</span></button>
+  </nav>
+
+  <main class="board" id="board"></main>
+  <section class="archive" id="archive" hidden></section>
+
+  <footer class="foot">
+    <div>
+      <h3>Sources &amp; channels</h3>
+      <div class="srcs">
+        <a target="_blank" rel="noopener" href="https://ticketswap.slack.com/archives/D07V5K98CMA/p1785933161803559">Sean · DM rundown</a>
+        <a target="_blank" rel="noopener" href="https://ticketswap.slack.com/archives/C03AATRH53L">#dutch-team</a>
+        <a target="_blank" rel="noopener" href="https://ticketswap.slack.com/archives/C03ATR2Q2KA">#new-deal-signed</a>
+        <a target="_blank" rel="noopener" href="https://ticketswap.slack.com/archives/C04HFQ5UC6N">#people-it-questions</a>
+        <a target="_blank" rel="noopener" href="https://disco.ticketswap.dev/leadgen/">Disco · leadgen</a>
+        <a target="_blank" rel="noopener" href="https://app.hubspot.com/">HubSpot</a>
+        <a target="_blank" rel="noopener" href="https://ticketswap.eu.looker.com/">Looker</a>
+        <a target="_blank" rel="noopener" href="https://www.notion.so/ticketswap/Support-x-Partnerships-bi-weekly-meeting-17e9b6c71158802b827ece545069f996">Notion · Support × Partnerships</a>
+      </div>
+    </div>
+    <div>
+      <h3>How to drive it</h3>
+      <p class="help">
+        Drag a card between columns, or press <kbd>←</kbd> <kbd>→</kbd> while it has focus.
+        Click the <kbd>P1</kbd> badge — or press <kbd>1</kbd>–<kbd>5</kbd> on a focused card — to set priority;
+        cards sort P1 first inside every column.
+        Tick items off as you go: when the last one is ticked the card moves itself to <b>Shipped</b>,
+        and unticking sends it back where it came from. Click an item's text to reword it, <kbd>×</kbd> to delete it,
+        <kbd>+ item</kbd> to add one.
+        <kbd>Enter</kbd> or a double-click rewrites a title. <kbd>+ Card</kbd> adds one, <kbd>×</kbd> removes it.
+        Everything stays in <em>your</em> browser for now — your ticks are not visible to anyone else opening this link. <kbd>Reset</kbd> restores the last sync.
+        <span id="warn" hidden><br>Heads up: this view isn't allowed to store anything, so moves reset on reload.</span>
+      </p>
+      <h3 style="margin-top:20px">Adding work from Slack</h3>
+      <p class="help">
+        React to any Slack message with <b>:todo:</b> and it lands in the <b>To do</b> column at the next sync,
+        with a link straight back to the thread. Nothing to fill in — the reaction <em>is</em> the capture.
+        Un-react to drop it again.
+        When anyone adds a <b>✅</b> to that same message it counts as finished, so the card arrives
+        already ticked and sitting in <b>Shipped</b>.
+        <br><br><b>Not wired up yet:</b> nothing is polling Slack on a timer, so for now these appear when the board is rebuilt by hand. The 5-minute job is the next piece.
+      </p>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var COLS = [
+    { id: "todo",    name: "To do",       c: "--violet", sub: "Tagged :todo: in Slack" },
+    { id: "week",    name: "This week",   c: "--rose",   sub: "" },   // set by weekLabels()
+    { id: "doing",   name: "In progress", c: "--indigo", sub: "Moving, no hard date" },
+    { id: "blocked", name: "Blocked",     c: "--amber",  sub: "Waiting on someone else" },
+    { id: "later",   name: "Later",       c: "--slate",  sub: "No date yet" },
+    { id: "done",    name: "Shipped",     c: "--teal",   sub: "Landed recently" }
+  ];
+
+  /* Default priorities. Every card can be overridden in the UI; overrides live in localStorage. */
+  var PRI = {
+    "hubspot-opt": 1, "promo-targets": 1, "apollo": 1, "legal": 1,
+    "kairos": 2, "weekly-stats": 2, "launchd": 2, "todo-board": 2, "todo-sync": 1, "secrets-fix": 2,
+    "standup": 3, "leadgen-dash": 3, "ticket-detect": 3, "latency": 3, "growth": 3, "deals-risk": 3, "lia": 3,
+    "hidde": 4, "partner-perf": 4, "max-access": 4, "cleanup": 4, "fee-template": 4, "kaboodle": 4,
+    "partner-monitor": 5, "refund": 5
+  };
+
+  var CARDS = [
+    {
+      /* One tick per pipeline, so the card carries the count rather than a note
+         somewhere. Deal Stage options are pipeline-specific in HubSpot, so
+         "5: CLOSED WON" is a different internal stage id in each one and each
+         needs its own condition — this cannot be done once centrally. */
+      id: "hs-closedwon-pipelines", col: "doing", tag: "HubSpot · properties", p: 2,
+      title: "Replicate Closed Won conditional logic across all deal pipelines",
+      checks: [
+        { t: "Sales Pipeline Ticket Providers — 38 dependent properties shown at 5: CLOSED WON", ok: true },
+        { t: "Sales Pipeline NL", ok: false },
+        { t: "Sales Pipeline BE", ok: false },
+        { t: "Sales Pipeline UK", ok: false },
+        { t: "Sales Pipeline FR", ok: false },
+        { t: "Sales Pipeline DACH", ok: false },
+        { t: "Sales Pipeline IT", ok: false },
+        { t: "Sales Pipeline ES", ok: false },
+        { t: "Sales Pipeline PT", ok: false },
+        { t: "Sales Pipeline NORDICS", ok: false },
+        { t: "Sales Pipeline HU", ok: false },
+        { t: "Sales Pipeline PL", ok: false },
+        { t: "Sales Pipeline CZ-SK", ok: false },
+        { t: "Sales Pipeline CEE (ex HU, PL, CZ-SK)", ok: false },
+        { t: "Sales Pipeline BR", ok: false },
+        { t: "Sales pipeline Rest of the world", ok: false },
+        { t: "List the remaining 6 non-sales pipelines — 21 left in total, only the 16 sales ones are named here", ok: false }
+      ],
+      why: "The conditional logic is done for <b>Sales Pipeline Ticket Providers</b>: at Deal Stage <b>5: CLOSED WON</b> its 38 dependent properties appear. Every other pipeline still needs the same rule. Because Deal Stage options are pipeline-specific, each pipeline's Closed Won stage is a separate internal id, so it is 21 separate condition rules — set in Settings &rarr; Properties, on the controlling property's conditional-logic panel.",
+      who: ["Sean"],
+      refs: [{ t: "HubSpot property settings", u: "https://app-eu1.hubspot.com/settings/properties" }]
+    },
+    /* The HubSpot migration note. One card per block of that document, with the
+       ticks it already carries — the page is the source of truth, these cards
+       exist so the work is visible next to everything else. */
+    {
+      id: "hs-mig-besluiten", col: "blocked", tag: "HubSpot · migratie", p: 1,
+      title: "Five decisions that block the workflow build",
+      checks: [
+        { t: "Amount on AM deals = ACV (Revised)? — needed for AM-01", ok: false },
+        { t: "Is “6. New Contract Year” a won stage? — decides whether AM-02 triggers on it", ok: false },
+        { t: "Drop the segment filter on AM-01 (all partners) or keep it (AA/A/B only)?", ok: false },
+        { t: "Renewal cadence AM-04: 180/90/60/30/0 days, or different?", ok: false },
+        { t: "BD-02: keep our own date field or switch to HubSpot's “Date entered”?", ok: false }
+      ],
+      why: "These five sit in front of the build, not after it. AM-01 cannot be built before decision 1 and 3, and AM-02 depends on 2. Decide with <b>Sean</b> in one go.",
+      who: ["Sean"],
+      refs: [{ t: "HubSpot migratie", u: "https://app.notion.com/p/3f29b6c7115880dabdd0dc7d9c322917" }]
+    },
+    {
+      id: "hs-mig-stage1", col: "doing", tag: "HubSpot · migratie", p: 1,
+      title: "Step 1 — finish pipeline configuration",
+      checks: [
+        { t: "“6. New Contract Year” — decide win / open / scrap, and strip the trailing space in the label", ok: false },
+        { t: "Recreate the 4 stages that have no tracking properties (6 and 8, both AM pipelines) and restore their conditional logic", ok: false },
+        { t: "Display order — move the 4 Master pipelines to the top; hide or restrict the old ones after migration", ok: false },
+        { t: "Close the conditional-logic gaps: 4a BD stage 2, 4b BD stage 4, 4c AM stage 3, 4d BD TP Closed Won, 4e AM stage 5, 4f AM stage 7", ok: false },
+        { t: "Remove manual PV Segment from both BD Proposal rules and both SQL rules; check the E (0k–25k) branch of W2 has a Set-property action", ok: false },
+        { t: "Clean-up: archive TEST ROUND UP COMMA PROPERTY, record the decision on AM probabilities", ok: false }
+      ],
+      why: "<b>Must be done before any deal enters the Master pipelines.</b> Recreating the stages hands out new stage IDs, so anything already pointing at the old ones has to be re-picked — right now that is almost nothing, which is exactly why it is cheap today and expensive later.",
+      who: ["Sean"],
+      refs: [{ t: "HubSpot migratie", u: "https://app.notion.com/p/3f29b6c7115880dabdd0dc7d9c322917" }]
+    },
+    {
+      id: "hs-mig-calc", col: "todo", tag: "HubSpot · migratie", p: 2,
+      title: "Build the 7 CALC- workflows",
+      checks: [
+        { t: "CALC-01 — Resale Percentage (replaces 13 ACV Calculation workflows)", ok: false },
+        { t: "CALC-02 — Currency from Country", ok: false },
+        { t: "CALC-03 — PV Segment (Contract Start Date)", ok: false },
+        { t: "CALC-04 — PV Segment (Revised) — exists, needs switching on", ok: false },
+        { t: "CALC-05 — Revenue Segment", ok: true },
+        { t: "CALC-06 — Amount = ACV (Contract Start Date), BD only", ok: false },
+        { t: "CALC-07 — VAT % from Country", ok: false }
+      ],
+      why: "Build order puts CALC-02, CALC-04, CALC-05 and CALC-06 <i>before</i> deals move, so the data is right on arrival. CALC-01 is the biggest consolidation but can wait — the 13 existing ones keep working in the new pipelines.",
+      refs: [{ t: "HubSpot migratie", u: "https://app.notion.com/p/3f29b6c7115880dabdd0dc7d9c322917" }]
+    },
+    {
+      id: "hs-mig-bd", col: "todo", tag: "HubSpot · migratie", p: 2,
+      title: "Build the 7 BD- workflows",
+      checks: [
+        { t: "BD-01 — Lifecycle & lead status from deal stage (replaces 7)", ok: false },
+        { t: "BD-02 — Entered Contract Sent date", ok: true },
+        { t: "BD-03 — Closed Won: legal entity, Slack, ACV mail", ok: false },
+        { t: "BD-04 — Opportunity lost notification", ok: false },
+        { t: "BD-05 — Deal without an associated contact", ok: true },
+        { t: "BD-06 — Stale deal: no next activity", ok: false },
+        { t: "BD-07 — Handover check: no 2-Step Verification", ok: false }
+      ],
+      why: "All of these must be live <b>before</b> the deals move, so everything triggering on BD Master is ready on day one.",
+      refs: [{ t: "HubSpot migratie", u: "https://app.notion.com/p/3f29b6c7115880dabdd0dc7d9c322917" }]
+    },
+    {
+      id: "hs-mig-am", col: "todo", tag: "HubSpot · migratie", p: 2,
+      title: "Build the AM- workflows",
+      checks: [
+        { t: "AM-01 — create the AM deal on a new partner", ok: false },
+        { t: "AM-02 — create the next contract year on renewal", ok: false },
+        { t: "AM-03 — stage tasks, one workflow with a branch per stage", ok: false },
+        { t: "AM-04 — renewal reminders 180/90/60/30/0 days (14 workflows → 1)", ok: false },
+        { t: "AM-05 — churn notification (blueprint only, not built)", ok: false },
+        { t: "AM-05a — set End Date on Closed Lost: built", ok: true },
+        { t: "AM-05a — switched on", ok: false },
+        { t: "AM-05a — tested", ok: false },
+        { t: "AM-06 — derive Type of partner (1,090 won deals are empty)", ok: false },
+        { t: "AM-07 — sync contract type & end date to company", ok: false }
+      ],
+      why: "AM-01 and AM-03 come before the deals move, so the first Closed Won in a new pipeline produces a correct AM deal straight away. The rest is only relevant once AM deals exist. AM-04 is the big one: <b>14 workflows collapse into 1</b>.",
+      refs: [{ t: "HubSpot migratie", u: "https://app.notion.com/p/3f29b6c7115880dabdd0dc7d9c322917" }]
+    },
+    {
+      id: "hs-mig-sync", col: "todo", tag: "HubSpot · migratie", p: 3,
+      title: "Build the 3 SYNC- quality workflows",
+      checks: [
+        { t: "SYNC-01 — ACV (CSD) placeholder alert (907 deals at €0/€1)", ok: false },
+        { t: "SYNC-02 — required fields missing at Closed Won", ok: false },
+        { t: "SYNC-03 — 2-Step Verification changed", ok: false }
+      ],
+      why: "Last in the build order. SYNC-02 is the safety net for deals arriving by import or API, which bypass conditional logic entirely.",
+      refs: [{ t: "HubSpot migratie", u: "https://app.notion.com/p/3f29b6c7115880dabdd0dc7d9c322917" }]
+    },
+    {
+      id: "hs-mig-legacy", col: "later", tag: "HubSpot · migratie", p: 3,
+      title: "Switch off and archive the old workflows",
+      checks: [
+        { t: "Switch off now — wrong in the new model: 4× Closed Won moving to Closed Lost, People who left TicketSwap, 2 dead-pipeline workflows, Rounding ACV, Rounding PV", ok: false },
+        { t: "Switch off once the replacement is live — 13× ACV Calculation, W4–W9, W8.1, W1.A/B, W9.1, 4× Opportunity lost, A.M.1/2/3, Renewal 1–5, 9 expiry variants", ok: false },
+        { t: "Leave them off for 30 days, then archive — keeps rollback possible", ok: false },
+        { t: "Still to decide: Magnify lead status, Digital Marketing deal type, Closed Lost check-in after 120 days", ok: false }
+      ],
+      why: "The target is <b>69 active deal workflows down to 24</b>. The first group can go off today — it is actively wrong in the new model.",
+      refs: [{ t: "HubSpot migratie", u: "https://app.notion.com/p/3f29b6c7115880dabdd0dc7d9c322917" }]
+    },
+    {
+      id: "todo-board", doneISO: "2026-08-11", col: "done", tag: "Tooling", due: "11 Aug", p: 2,
+      title: "Built this board and put it on Disco",
+      checks: [
+        { t: "Six columns, P1\u2013P5 priorities, checklists that move a card to Shipped when the last item is ticked", ok: true },
+        { t: "Every card deep-links back to the Slack thread, meeting or dashboard it came from", ok: true },
+        { t: "Late flagging from real dates, and its own light/dark toggle", ok: true }
+      ],
+      why: "Lives behind the TicketSwap login at disco.ticketswap.dev/todo-board, so Sean can just open it. Answers &ldquo;what are you working on&rdquo; without me writing it out again.",
+      who: ["Sean"],
+      refs: [{ t: "Board", u: "https://disco.ticketswap.dev/todo-board/" }]
+    },
+    {
+      id: "todo-sync", doneISO: "2026-08-11", col: "done", tag: "Tooling \u00b7 automation", due: "11 Aug", p: 1,
+      title: "Slack :todo: capture, running every 5 minutes",
+      checks: [
+        { t: "React :todo: on any message \u2014 channel or DM \u2014 and it becomes a card with a link back", ok: true },
+        { t: "A checkmark from anyone closes it; :todo_added: is stamped back so I can see it registered", ok: true },
+        { t: "Claude reads each candidate and drops the noise \u2014 67 raw matches down to 6 real ones", ok: true },
+        { t: "launchd every 300s, with a health strip that goes amber if it ever stops", ok: true }
+      ],
+      why: "Needed its own Slack app: <b>search:read</b> is user-scope only and my todos are mostly DMs, so a bot could never see them. A ledger stops anything being re-added or double-reported.",
+      who: ["IT"],
+      refs: [{ t: "Slack app", u: "https://api.slack.com/apps" }]
+    },
+    {
+      id: "secrets-fix", doneISO: "2026-08-11", col: "done", tag: "Ad hoc \u00b7 security", due: "11 Aug", p: 2,
+      title: "Closed two secret leaks in ts-compliance",
+      checks: [
+        { t: "The .env holding 7 live tokens was not gitignored, in a repo that pushes to GitHub \u2014 now ignored", ok: true },
+        { t: "The leadgen service-account key was world-readable (644) \u2014 now 600", ok: true },
+        { t: "Checked history: neither was ever committed, so nothing was actually exposed", ok: true }
+      ],
+      why: "Found while wiring the Slack token. One <b>git add -A</b> would have published an Anthropic key, a GitHub token, a HubSpot token and a Notion token to github.com/jorisdekoning/ts-compliance-dashboard.",
+      refs: []
+    },
+    {
+      id: "hubspot-opt", dueISO: "2026-08-07", col: "week", tag: "Stream 2", due: "Fri 7 Aug", hot: true,
+      title: "HubSpot optimisations",
+      checks: ["Improve ACV flows", "Privacy Policy on every partner page", "Rework Closed Lost Reasons", { t: "Integrate Claude — LIA signed off", ok: true }],
+      why: "Sean's read: <b>&ldquo;optimising HubSpot by end of week, that's quite something&rdquo;</b> — agreed scope is the basics, not everything.",
+      who: ["Sean"],
+      refs: [
+        { t: "Sean · DM", u: "https://ticketswap.slack.com/archives/D07V5K98CMA/p1785933161803559" },
+        { t: "Fri 13:30", u: "https://www.google.com/calendar/event?eid=NjJ2ZWthamxvNHR0b2k2aW1rNGxoMmxmZWFfMjAyNjA4MDdUMTEzMDAwWiBqb3Jpcy5kZWtvbmluZ0B0aWNrZXRzd2FwLmNvbQ&ctz=Europe/Amsterdam" }
+      ]
+    },
+    {
+      id: "promo-targets", dueISO: "2026-08-07", col: "week", tag: "Stream 3", due: "Fri 7 Aug", hot: true,
+      title: "Define promotion targets",
+      checks: ["Pin down what &ldquo;excellent&rdquo; actually means", "Attach concrete KPIs and values to the outcomes"],
+      why: "Lands Tuesday in the development-plan catch-up with Nikki and Sean.",
+      who: ["Nikki", "Sean"],
+      refs: [{ t: "Tue 14:00", u: "https://www.google.com/calendar/event?eid=NmFyYzJiN29sM3NtcDFrbmFxb3Ruc3Zvcjggam9yaXMuZGVrb25pbmdAdGlja2V0c3dhcC5jb20&ctz=Europe/Amsterdam" }]
+    },
+    {
+      id: "kairos", dueISO: "2026-08-07", col: "week", tag: "Ad hoc", due: "Fri morning", hot: true,
+      title: "Help Larissa with kickback vs FairShare",
+      checks: ["Explain when kickback lapses and FairShare takes over", "Worked example back to Kairos — Paylogic, ~3,422 tickets sold"],
+      why: "Larissa asked for Friday morning specifically, before she replies to them.",
+      who: ["Larissa", "Tom"],
+      refs: [{ t: "#dutch-team", u: "https://ticketswap.slack.com/archives/C03AATRH53L/p1785942196264649" }]
+    },
+    {
+      id: "standup", dueISO: "2026-08-10", col: "week", tag: "Ritual", due: "Mon 11:00",
+      title: "Prep for PS Markets stand-up",
+      checks: ["Biggest win last week", "Biggest market objective this week", "Biggest roadblock", "Drop it in the meeting notes beforehand"],
+      who: ["Sean"],
+      refs: [
+        { t: "Calendar", u: "https://www.google.com/calendar/event?eid=NThucXRjYWtvdHRmbGVuamNkNW5nNmFyZGZfMjAyNjA4MTBUMDkwMDAwWiBqb3Jpcy5kZWtvbmluZ0B0aWNrZXRzd2FwLmNvbQ&ctz=Europe/Amsterdam" },
+        { t: "Notes", u: "https://docs.google.com/document/d/11_e39pwOTaW3-B3A7vWpcpYnuXg_EtxcSsXY8dqFfnQ/edit" }
+      ]
+    },
+
+    {
+      id: "apollo", dueISO: "2026-08-15", col: "doing", tag: "Stream 1 · main focus", due: "15 Aug", hot: true,
+      title: "Connect and implement Apollo",
+      checks: ["Build the integration", "Start data enrichment \u2014 Legal cleared it", "Team training the week after go-live"],
+      why: "The reason I'm here four days a week. Legal sign-off is through, so enrichment can start \u2014 four days to the 15 Aug deadline, then training the week after. <b>Remaining risk:</b> Adrian is away.",
+      who: ["Adrian"],
+      refs: [{ t: "Sean · DM", u: "https://ticketswap.slack.com/archives/D07V5K98CMA/p1785933161803559" }]
+    },
+    {
+      id: "leadgen-dash", col: "doing", tag: "Stream 1 · Disco", due: "running",
+      title: "Leadgen dashboard with a closed feedback loop",
+      checks: [
+        { t: "Removed leads (bad site / not relevant / event closed) feed back to the sheet and the agent every Monday", ok: true },
+        { t: "Daily sync running again — moved to launchd", ok: true },
+        "Claim button → auto-create the HubSpot deal and company under the claimer"
+      ],
+      why: "The token stays server-side on the Mac mini, never in the browser.",
+      who: ["Adrian", "Casper"],
+      refs: [{ t: "Disco", u: "https://disco.ticketswap.dev/leadgen/" }]
+    },
+    {
+      id: "ticket-detect", col: "doing", tag: "Stream 9", due: "scope open",
+      title: "Keep ticket detection alive",
+      checks: ["Brainstorm with Christoph", "Push a solution and think it through with him", "Scope still needs defining"],
+      who: ["Christoph"],
+      refs: [{ t: "Fri 09:30", u: "https://www.google.com/calendar/event?eid=MWtoOWY4dnBxMnAwdHQ4YTJkMGJhcWtpaWcgam9yaXMuZGVrb25pbmdAdGlja2V0c3dhcC5jb20&ctz=Europe/Amsterdam" }]
+    },
+    {
+      id: "hidde", col: "doing", tag: "Stream 8", due: "running",
+      title: "Support Hidde",
+      checks: ["Help build out the new Notion page", "Document the processes properly"],
+      who: ["Hidde"]
+    },
+    {
+      id: "partner-monitor", col: "doing", tag: "Stream 6", due: "after Oct",
+      title: "Partner Monitor in Notion",
+      checks: ["Keep testing and improving it"],
+      why: "Low priority from Casper, so this moves at a calm pace. Expected in use after October.",
+      who: ["Casper"]
+    },
+
+    {
+      id: "legal", dueISO: "2026-08-15", col: "blocked", tag: "Stream 1", due: "blocks 15 Aug", hot: true,
+      title: "Legal sign-off for data enrichment",
+      checks: ["Enrichment cannot start without the green light"],
+      why: "This is the critical dependency sitting underneath the 15 August deadline.",
+      who: ["Legal"]
+    },
+    {
+      id: "partner-perf", col: "blocked", tag: "Stream 5.2", due: "since May",
+      title: "Partner performance dashboard",
+      checks: ["Data team hasn't had time since the OKR focus shift"],
+      why: "Raised back in May. Overlaps heavily with Christoph's Account Management dashboard — merge or split needs deciding first.",
+      who: ["Data team", "Christoph"]
+    },
+    {
+      id: "latency", col: "blocked", tag: "Stream 1 · Disco", due: "asked 6 Aug",
+      title: "45-second wait on disco.ai chat",
+      checks: ["45.3s and 45.6s to first token, measured twice", "Same prompt straight to the Anthropic API: 2.1s", "Open question to Adrian: queue or concurrency limit?"],
+      why: "Generation itself is fast — it's purely the wait before it starts.",
+      who: ["Adrian"]
+    },
+    {
+      id: "weekly-stats", col: "blocked", tag: "Automation", due: "needs a call",
+      title: "Weekly leadgen stats into Slack",
+      checks: ["W32 already ran: 26 new leads, 1 hot, 0 claimed, 0 outreach", "Still open: who owns follow-up", "Notion connector not linked yet"],
+      why: "26 leads across 12 markets arrived unclaimed. What's missing is a decision, not code.",
+      who: ["Sean", "Casper"],
+      refs: [{ t: "#new-deal-signed", u: "https://ticketswap.slack.com/archives/C03ATR2Q2KA" }]
+    },
+    {
+      id: "max-access", col: "blocked", tag: "Ad hoc · IT", due: "asked 5 Aug",
+      title: "Get Max Maeder access",
+      checks: ["Partner segment in admin", "1Password partnerships vault"],
+      who: ["IT"],
+      refs: [{ t: "#people-it-questions", u: "https://ticketswap.slack.com/archives/C04HFQ5UC6N/p1785923330893699" }]
+    },
+
+    {
+      id: "cleanup", col: "later", tag: "Stream 4", due: "TBD",
+      title: "HubSpot clean-up project",
+      checks: ["Map out what needs cleaning and improving"]
+    },
+    {
+      id: "fee-template", col: "later", tag: "Stream 5.3", due: "TBD",
+      title: "Fee proposal template",
+      checks: ["Not started — waiting for room on the data team's plate"],
+      who: ["Data team"]
+    },
+    {
+      id: "refund", col: "later", tag: "Stream 7", due: "TBD",
+      title: "Refund Tool business case",
+      checks: ["Work out the new automation ideas", "Refund Tool or something comparable"]
+    },
+    {
+      id: "growth", col: "later", tag: "Personal", due: "ongoing",
+      title: "My own development goals",
+      checks: ["Go deeper on HubSpot", "Broaden Looker knowledge", "Integrate my tools so the work centralises", "Research new revenue solutions", "Self-service in admin — business cases for the easiest wins"],
+      who: ["Nikki", "Sean"]
+    },
+
+    {
+      id: "deals-risk", doneISO: "2026-07-15", col: "done", tag: "Stream 5.1", due: "done",
+      title: "Deals-at-risk dashboard",
+      checks: [{ t: "First of the three data projects, finished", ok: true }],
+      who: ["Data team"]
+    },
+    {
+      id: "launchd", doneISO: "2026-08-04", col: "done", tag: "Stream 1 · infra", due: "4 Aug",
+      title: "Fixed the daily sync",
+      checks: [{ t: "Moved from cron to launchd, runs at 08:00", ok: true }, { t: "Cron couldn't read the Keychain — failed silently for 8 days", ok: true }],
+      why: "12 removed leads had piled up unsynced in the meantime."
+    },
+    {
+      id: "lia", doneISO: "2026-08-05", col: "done", tag: "Stream 2", due: "done",
+      title: "LIA filled in for the Claude integration",
+      checks: [{ t: "Took a while, but it's through", ok: true }]
+    },
+    {
+      id: "kaboodle", doneISO: "2026-08-06", col: "done", tag: "Ad hoc · invoicing", due: "6 Aug",
+      title: "Logged Kaboodle Solutions in #new-deal-signed",
+      checks: [{ t: "Signed back in April, but this is the cleanest route for invoicing", ok: true }],
+      who: ["Oscar"],
+      refs: [{ t: "#new-deal-signed", u: "https://ticketswap.slack.com/archives/C03ATR2Q2KA/p1786017525990739" }]
+    }
+  ];
+
+  var SLACK = [];            // cards from todo_sync.py, via slack.json
+  var BRIEF = [];            // standing questions, answered by the sync on the Mac
+  var KEY = "joris-board-v2";
+
+  /* Shared state. The board's state blob lives in Disco's DB so everyone sees
+     the same thing; localStorage stays as an offline cache and a fallback when
+     the runtime is missing (local preview, or Disco not yet attached).
+     Two people editing the same second is last-write-wins — fine for two, and
+     the re-read-before-write below keeps it to the field actually touched. */
+  var REMOTE = { on: false, recId: null, me: null, saving: false, again: false };
+  var HKEY = KEY + "-history";
+  var LAST_REMOTE_SNAP = 0;
+
+  /* Every change snapshots the *previous* state first, so there is always a way
+     back. Yesterday's loss was unrecoverable because nothing kept an earlier
+     copy — this is the cheap insurance against the next unforeseen bug. */
+  function pushHistory(prev) {
+    try {
+      var h = JSON.parse(window.localStorage.getItem(HKEY) || "[]");
+      h.unshift({ at: new Date().toISOString(), blob: prev });
+      window.localStorage.setItem(HKEY, JSON.stringify(h.slice(0, 20)));
+    } catch (e) {}
+  }
+
+  function history() {
+    try { return JSON.parse(window.localStorage.getItem(HKEY) || "[]"); }
+    catch (e) { return []; }
+  }
+
+  /* Merge, never replace. The first version of this assigned the remote blob
+     straight over local state, so any browser opening the board with an emptier
+     copy wiped everyone's edits. Nothing is ever removed by loading: maps take
+     the union with local winning ties, lists take the union by id. */
+  function mergeState(mine, theirs) {
+    var out = { moves: {}, added: [], gone: [], titles: {}, pri: {},
+                items: {}, auto: {}, done: {}, due: {}, merged: {},
+                hide: !!mine.hide, top: !!mine.top };
+
+    out.arch = {};
+    ["moves", "titles", "pri", "items", "auto", "done", "due", "arch", "merged"].forEach(function (k) {
+      var a = theirs[k] || {}, b = mine[k] || {};
+      Object.keys(a).forEach(function (id) { out[k][id] = a[id]; });
+      Object.keys(b).forEach(function (id) { out[k][id] = b[id]; });   // local wins
+    });
+
+    var seenIds = {};
+    (theirs.added || []).concat(mine.added || []).forEach(function (c) {
+      if (c && c.id && !seenIds[c.id]) { seenIds[c.id] = 1; out.added.push(c); }
+    });
+    (theirs.gone || []).concat(mine.gone || []).forEach(function (id) {
+      if (out.gone.indexOf(id) === -1) out.gone.push(id);
+    });
+    return out;
+  }
+
+  function stateCol() {
+    return (window.disco && disco.db) ? disco.db.collection("board_state") : null;
+  }
+
+  function remoteLoad() {
+    var col = stateCol();
+    if (!col) return Promise.resolve(false);
+    return Promise.all([
+      col.list({ limit: 5 }),
+      (disco.id ? disco.id().catch(function () { return null; }) : Promise.resolve(null)),
+    ]).then(function (r) {
+      var rows = Array.isArray(r[0]) ? r[0] : (r[0] && r[0].items) || [];
+      REMOTE.me = (r[1] && (r[1].email || r[1].name)) || null;
+      var rec = rows.filter(function (x) { return x && x.blob; })[0];
+      if (rec) {
+        REMOTE.recId = rec.id || rec._id;
+        try {
+          var blob = typeof rec.blob === "string" ? JSON.parse(rec.blob) : rec.blob;
+          if (blob && typeof blob === "object") state = mergeState(state, blob);
+        } catch (e) {}
+      }
+      REMOTE.on = true;
+      return true;
+    }).catch(function () { return false; });
+  }
+
+  function remoteSave() {
+    var col = stateCol();
+    if (!col || !REMOTE.on) return;
+    if (REMOTE.saving) { REMOTE.again = true; return; }
+    var weight = Object.keys(state.moves || {}).length + (state.added || []).length +
+                 Object.keys(state.items || {}).length + Object.keys(state.done || {}).length;
+    if (!weight && REMOTE.recId) return;      // nothing local worth publishing
+    REMOTE.saving = true;
+    var rec = {
+      blob: JSON.stringify(state),
+      updatedBy: REMOTE.me || "someone",
+      updatedAt: new Date().toISOString(),
+    };
+    var p = REMOTE.recId ? col.update(REMOTE.recId, rec) : col.create(rec);
+    // A throttled versioned copy, so a bad write is recoverable rather than final.
+    if (Date.now() - LAST_REMOTE_SNAP > 600000) {
+      LAST_REMOTE_SNAP = Date.now();
+      var hist = disco.db.collection("board_state_history");
+      hist.create({ blob: rec.blob, at: rec.updatedAt, by: rec.updatedBy })
+        .then(function () { return hist.list({ limit: 60 }); })
+        .then(function (r) {
+          var rows = Array.isArray(r) ? r : (r && r.items) || [];
+          rows.sort(function (a, b) { return (b.at || "").localeCompare(a.at || ""); });
+          rows.slice(24).forEach(function (old) {
+            try { hist.delete(old.id || old._id); } catch (e) {}
+          });
+        }).catch(function () {});
+    }
+
+    p.then(function (made) {
+      if (!REMOTE.recId && made) REMOTE.recId = made.id || made._id;
+    }).catch(function () {}).then(function () {
+      REMOTE.saving = false;
+      if (REMOTE.again) { REMOTE.again = false; remoteSave(); }
+      stamp();
+    });
+  }
+
+  function stamp() {
+    var el = document.getElementById("shared");
+    if (!el) return;
+    el.textContent = REMOTE.on
+      ? "Shared \u00b7 everyone sees the same board"
+      : "This browser only \u2014 not shared";
+    el.className = "shared" + (REMOTE.on ? " on" : "");
+  }
+  var board = document.getElementById("board");
+  var ok = true;
+  var state;
+
+  try {
+    var raw = window.localStorage.getItem(KEY);
+    state = raw ? JSON.parse(raw) : null;
+  } catch (e) { ok = false; }
+  if (!state) state = { moves: {}, added: [], gone: [], titles: {}, pri: {}, items: {}, auto: {}, hide: false, top: false };
+  if (!state.pri) state.pri = {};
+  if (!state.items) state.items = {};
+  if (!state.auto) state.auto = {};
+  if (!state.done) state.done = {};   // id -> YYYY-MM-DD, when it was finished
+  if (!state.due) state.due = {};     // id -> YYYY-MM-DD, when it is due
+  if (!state.arch) state.arch = {};   // id -> true, forced into the Archive early
+  if (!state.merged) state.merged = {};  // duplicate id -> the card it folds into
+  if (!ok) document.getElementById("warn").hidden = false;
+
+  function save() {
+    try { pushHistory(JSON.parse(window.localStorage.getItem(KEY) || "{}")); } catch (e) {}
+    if (ok) {
+      try { window.localStorage.setItem(KEY, JSON.stringify(state)); }
+      catch (e) { ok = false; document.getElementById("warn").hidden = false; }
+    }
+    remoteSave();
+  }
+
+  function esc(s) {
+    return String(s).replace(/&(?![a-z#0-9]+;)/gi, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function colOf(id) { return COLS.filter(function (c) { return c.id === id; })[0]; }
+
+  /* Days past a card's date. Positive means late; Shipped is never late. */
+  /* A finished card stays in Shipped for a week, then moves to the Archive tab
+     rather than disappearing. */
+  var ARCHIVE_AFTER = 7;
+
+  function doneAge(c) {
+    if (c.col !== "done" || !c.doneISO) return 0;
+    return Math.floor((Date.now() - new Date(c.doneISO + "T23:59:59").getTime()) / 86400000) + 1;
+  }
+
+  /* Two different questions, deliberately:
+     - the Archive tab is the full record: everything ever Shipped
+     - the board's Shipped column keeps only the last week, so it stays short */
+  function inArchive(c) { return c.col === "done"; }
+  function offBoard(c) {
+    return c.col === "done" && (state.arch[c.id] === true || doneAge(c) > ARCHIVE_AFTER);
+  }
+
+  /* Stamp a completion date the moment something lands in Shipped, so it has
+     one to archive by — and clear it if it comes back out. */
+  function touchDone(id, col) {
+    if (col === "done") {
+      if (!state.done[id]) {
+        var d = new Date();
+        state.done[id] = d.getFullYear() + "-" +
+          String(d.getMonth() + 1).padStart(2, "0") + "-" +
+          String(d.getDate()).padStart(2, "0");
+      }
+    } else if (state.done[id]) {
+      delete state.done[id];
+    }
+  }
+
+  function daysLate(c) {
+    if (!c.dueISO || c.col === "done") return 0;
+    return Math.floor((Date.now() - new Date(c.dueISO + "T23:59:59").getTime()) / 86400000) + 1;
+  }
+
+  /* Days until it is due. A red badge after the fact is no use — the HubSpot
+     and promotion-target items were four days gone before anything showed. */
+  var WARN_WITHIN = 2;
+  function daysUntil(c) {
+    if (!c.dueISO || c.col === "done") return null;
+    var d = Math.ceil((new Date(c.dueISO + "T23:59:59").getTime() - Date.now()) / 86400000);
+    return d >= 0 ? d : null;
+  }
+
+  /* Deduped by id: a card the sync produces and a card added by hand can end up
+     carrying the same id, and two copies means everything downstream — the
+     board, the snapshot, the AI answer — shows it twice. First one wins. */
+  function everyCard() {
+    var seen = {};
+    return CARDS.concat(SLACK).concat(state.added).filter(function (c) {
+      if (!c || !c.id || seen[c.id]) return false;
+      seen[c.id] = true;
+      return true;
+    });
+  }
+
+  /* --- checklist items: defaults, overrides, and the all-done rule --- */
+
+  function normItems(c) {
+    return (c.checks || []).map(function (k) {
+      return typeof k === "string" ? { t: k, ok: false } : { t: k.t, ok: !!k.ok };
+    });
+  }
+
+  function itemsOf(c) {
+    return state.items[c.id] || normItems(c);
+  }
+
+  function materialise(id) {
+    if (!state.items[id]) {
+      var c = everyCard().filter(function (x) { return x.id === id; })[0];
+      state.items[id] = c ? normItems(c) : [];
+    }
+    return state.items[id];
+  }
+
+  function baseCol(id) {
+    var c = everyCard().filter(function (x) { return x.id === id; })[0];
+    return c ? c.col : "todo";
+  }
+
+  /* Everything ticked → the card moves itself to Shipped. Untick one and it
+     goes back where it came from, but only if we were the ones who moved it. */
+  function settle(id) {
+    var its = state.items[id] || [];
+    var all = its.length > 0 && its.every(function (i) { return i.ok; });
+    if (all && state.moves[id] !== "done") {
+      state.moves[id] = "done";
+      state.auto[id] = true;
+      touchDone(id, "done");
+    } else if (!all && state.auto[id]) {
+      state.moves[id] = baseCol(id);
+      delete state.auto[id];
+      touchDone(id, baseCol(id));
+    }
+    save();
+    render();
+  }
+
+  /* Follow a merge chain to the card everything ends up on. a→b and b→c means a
+     shows up on c. The seen guard means a corrupted state that points in a circle
+     costs a card, not the whole page. */
+  function mergeRoot(id) {
+    var m = state.merged || {}, seen = {}, cur = id;
+    while (m[cur] && !seen[cur]) { seen[cur] = 1; cur = m[cur]; }
+    return cur;
+  }
+
+  /* The same job often arrives twice — once from a Slack :todo: and once from the
+     action items in the meeting note where it was agreed. Merging keeps one card
+     that carries everything: both source links, both sets of people, and the
+     combined checklist. The duplicate is folded, never deleted, so it can be
+     split back out and the sync's ledger stays intact. */
+  function foldMerged(cards) {
+    var m = state.merged || {};
+    if (!Object.keys(m).length) return cards;
+
+    var byId = {};
+    cards.forEach(function (c) { byId[c.id] = c; });
+
+    var keep = [], folded = {};
+    cards.forEach(function (c) {
+      var root = mergeRoot(c.id);
+      // A card whose winner no longer exists stays on the board on its own,
+      // rather than vanishing along with it.
+      if (root === c.id || !byId[root]) keep.push(c);
+      else (folded[root] = folded[root] || []).push(c);
+    });
+
+    keep.forEach(function (w) {
+      var kids = folded[w.id];
+      if (!kids || !kids.length) return;
+      w.mergedFrom = kids.map(function (k) {
+        var s = (k.refs || [])[0] || {};
+        return { id: k.id, title: k.title, tag: k.tag, u: s.u || "" };
+      });
+
+      // Every source link, deduped by URL — this is the whole point of merging.
+      var refs = (w.refs || []).slice(), urls = {};
+      refs.forEach(function (r) { urls[r.u] = 1; });
+      kids.forEach(function (k) {
+        (k.refs || []).forEach(function (r) {
+          if (r && r.u && !urls[r.u]) { urls[r.u] = 1; refs.push(r); }
+        });
+      });
+      w.refs = refs;
+
+      var who = (w.who || []).slice();
+      kids.forEach(function (k) {
+        (k.who || []).forEach(function (p) { if (who.indexOf(p) === -1) who.push(p); });
+      });
+      w.who = who;
+
+      // Most urgent priority and earliest due date win: folding a duplicate must
+      // never make a piece of work look less pressing than it was.
+      kids.forEach(function (k) {
+        if (k.p && k.p < w.p) w.p = k.p;
+        if (k.dueISO && (!w.dueISO || k.dueISO < w.dueISO)) { w.dueISO = k.dueISO; w.due = k.dueISO; }
+        if (k.blockedDays && k.blockedDays > (w.blockedDays || 0)) w.blockedDays = k.blockedDays;
+      });
+    });
+
+    return keep;
+  }
+
+  function resolved() {
+    return foldMerged(everyCard()
+      .filter(function (c) { return state.gone.indexOf(c.id) === -1; })
+      .map(function (c) {
+        var o = Object.assign({}, c);
+        if (Object.prototype.hasOwnProperty.call(state.moves, c.id)) o.col = state.moves[c.id];
+        if (state.titles && state.titles[c.id]) { o.title = state.titles[c.id]; o.plain = true; }
+        if (state.done[c.id]) o.doneISO = state.done[c.id];
+        if (state.due[c.id]) { o.dueISO = state.due[c.id]; o.due = state.due[c.id]; }
+        o.p = state.pri[c.id] || PRI[c.id] || c.p || 3;
+        o.ck = itemsOf(c);
+        return o;
+      }));
+  }
+
+  function list() {
+    return resolved().filter(function (c) { return !offBoard(c); });
+  }
+
+  function avClass(name) {
+    var n = 0;
+    for (var i = 0; i < name.length; i++) n += name.charCodeAt(i);
+    return "av-" + ((n % 5) + 1);
+  }
+
+  function initials(name) {
+    var p = name.trim().split(/\s+/);
+    return (p.length > 1 ? p[0][0] + p[1][0] : name.slice(0, 2)).toUpperCase();
+  }
+
+  function cardEl(c, i) {
+    var el = document.createElement("article");
+    el.className = "card";
+    el.draggable = true;
+    el.tabIndex = 0;
+    el.dataset.id = c.id;
+    el.style.setProperty("--i", i);
+    el.setAttribute("aria-label", c.title);
+    var soon = daysUntil(c);
+    if (daysLate(c) > 0) el.classList.add("is-late");
+    else if (soon !== null && soon <= WARN_WITHIN) el.classList.add("is-soon");
+
+    var h = '<div class="c-top">' +
+      '<span class="grip" draggable="true" title="Drag to move" aria-hidden="true">\u2237</span>' +
+      '<button type="button" class="pri" data-act="pri" data-p="' + c.p +
+      '" aria-label="Priority P' + c.p + ' — change it">P' + c.p + "</button>" +
+      '<span class="tag">' + esc(c.tag || "Own card") + "</span>";
+    if (c.ck && c.ck.length) {
+      var nOk = c.ck.filter(function (k) { return k.ok; }).length;
+      h += '<span class="prog' + (nOk === c.ck.length ? " full" : "") + '">' + nOk + "/" + c.ck.length + "</span>";
+    }
+    var late = daysLate(c);
+    if (late > 0) {
+      h += '<span class="due late">' + late + (late === 1 ? " day late" : " days late") + "</span>";
+    } else if (soon !== null && soon <= WARN_WITHIN) {
+      h += '<span class="due soon">' + (soon === 0 ? "due today" : soon === 1 ? "due tomorrow"
+        : "in " + soon + " days") + "</span>";
+    } else if (c.due) {
+      h += '<span class="due' + (c.hot ? " hot" : "") + '">' + esc(c.due) + "</span>";
+    }
+    h += "</div>";
+    h += '<div class="pick" hidden role="group" aria-label="Set priority">';
+    for (var q = 1; q <= 5; q++) {
+      h += '<button type="button" data-act="set" data-v="' + q + '"' +
+        (q === c.p ? ' aria-current="true"' : "") + ">P" + q + "</button>";
+    }
+    h += "</div>";
+    h += '<h3 class="c-title">' + (c.plain ? esc(c.title) : c.title) + "</h3>";
+
+    if (c.ck && c.ck.length) {
+      h += '<ul class="checks">';
+      c.ck.forEach(function (k, i) {
+        h += "<li" + (k.ok ? ' class="ok"' : "") + ">" +
+          '<button type="button" class="tick" data-act="tick" data-i="' + i + '"' +
+          ' aria-pressed="' + (k.ok ? "true" : "false") + '"' +
+          ' aria-label="' + (k.ok ? "Mark as not done" : "Mark as done") + '"></button>' +
+          '<span class="txt" data-act="itxt" data-i="' + i + '">' + k.t + "</span>" +
+          '<button type="button" class="idel" data-act="idel" data-i="' + i +
+          '" aria-label="Delete this item" title="Delete item">×</button></li>';
+      });
+      h += "</ul>";
+    }
+    h += '<button type="button" class="additem" data-act="additem">+ item</button>';
+
+    /* What this card absorbed, and a way back out. Without this the merge is
+       invisible and looks exactly like the card loss it is meant to prevent. */
+    if (c.mergedFrom && c.mergedFrom.length) {
+      h += '<div class="mfrom"><span class="mfrom-h">Merged in ' + c.mergedFrom.length +
+        (c.mergedFrom.length === 1 ? " card" : " cards") + "</span>";
+      /* Each folded card keeps its own way back to where it came from. Merging
+         two Slack threads into one card is useless if only one of them can still
+         be opened — that is the information the merge is supposed to preserve. */
+      c.mergedFrom.forEach(function (k) {
+        var label = esc(String(k.title).replace(/<[^>]+>/g, ""));
+        h += '<span class="mfrom-i">' +
+          (k.u ? '<a href="' + k.u + '" target="_blank" rel="noopener" class="mfrom-l">' +
+                 label + '<span class="arrow">↗</span></a>'
+               : label) +
+          '<button type="button" data-act="unmerge" data-mid="' + esc(k.id) +
+          '" title="Split this back out" aria-label="Split this card back out">↩</button></span>';
+      });
+      h += "</div>";
+    }
+
+    if (c.why) h += '<p class="why">' + c.why + "</p>";
+    if (c.blockedDays) {
+      h += '<p class="waiting">Waiting on someone for <b>' + c.blockedDays +
+        (c.blockedDays === 1 ? " day" : " days") + "</b></p>";
+    }
+
+    if (c.who && c.who.length) {
+      h += '<div class="avs">';
+      c.who.forEach(function (w) {
+        h += '<span class="av ' + avClass(w) + '" title="' + esc(w) + '">' + esc(initials(w)) + "</span>";
+      });
+      h += "</div>";
+    }
+
+    /* Titles are rewritten for readability, which can lose the sender's exact
+       words — so every card gets an obvious way back to the original. */
+    var src = (c.refs || [])[0];
+    if (src && src.u) {
+      // Notion hands back app.notion.com URLs, not notion.so — matching only the
+      // old host made every meeting note read "Open the source".
+      var kind = /slack\.com/.test(src.u) ? "Read the original message in Slack"
+        : /notion\.(so|com)/.test(src.u) ? "Open the meeting note in Notion"
+        : "Open the source";
+      h += '<a class="source" href="' + src.u + '" target="_blank" rel="noopener">' +
+        "<b>" + esc(kind) + "</b><span class=\"arrow\">\u2197</span></a>";
+    }
+
+    if (c.col === "done") {
+      h += '<div class="donerow"><label>Finished</label>' +
+        '<button type="button" class="datebtn" data-setdate="done" data-value="' +
+        esc(c.doneISO || "") + '">' + esc(c.doneISO || "set a date") + "</button></div>";
+    } else {
+      h += '<div class="donerow"><label>Due</label>' +
+        '<button type="button" class="datebtn" data-setdate="due" data-value="' +
+        esc(c.dueISO || "") + '">' + esc(c.dueISO || "set a date") + "</button></div>";
+    }
+
+    h += '<div class="c-foot"><div class="refs">';
+    (c.refs || []).forEach(function (r) {
+      h += '<a class="ref" target="_blank" rel="noopener" href="' + r.u + '">' + esc(r.t) + "</a>";
+    });
+    h += '</div><div class="ctl">' +
+      '<button type="button" data-a="m" class="mrg" aria-label="Merge this card with another" ' +
+      'title="Merge with another card">⧉</button>' +
+      '<button type="button" data-a="l" aria-label="Move left" title="Move left">←</button>' +
+      '<button type="button" data-a="r" aria-label="Move right" title="Move right">→</button>' +
+      '<button type="button" data-a="x" class="x" aria-label="Remove card" title="Remove">×</button>' +
+      "</div></div>";
+
+    el.innerHTML = h;
+    return el;
+  }
+
+  function renderArchive() {
+    var all = resolved().filter(inArchive)
+      .sort(function (a, b) { return (b.doneISO || "").localeCompare(a.doneISO || ""); });
+
+    document.getElementById("archN").textContent = all.length;
+    var host = document.getElementById("archive");
+    if (!all.length) {
+      host.innerHTML = '<p class="arch-empty">Nothing finished yet. Everything you ship is ' +
+        'listed here, newest first.</p>';
+      return;
+    }
+    var html = "", month = "";
+    all.forEach(function (c) {
+      var d = c.doneISO ? new Date(c.doneISO + "T12:00:00") : null;
+      var m = d ? d.toLocaleDateString(undefined, { month: "long", year: "numeric" })
+                : "No date set";
+      if (m !== month) { month = m; html += '<h3 class="arch-month">' + esc(m) + "</h3>"; }
+      var link = (c.refs || [])[0];
+      html += '<div class="arch-row" data-id="' + esc(c.id) + '">' +
+        '<button type="button" class="datebtn arch-date" data-setdate="done" data-value="' +
+          esc(c.doneISO || "") + '">' + esc(c.doneISO || "\u2014") + "</button>" +
+        '<span class="pri" data-p="' + c.p + '">P' + c.p + "</span>" +
+        '<span class="what">' + (c.plain ? esc(c.title) : c.title) + "</span>" +
+        '<span class="src">' + esc(c.tag || "") + "</span>" +
+        (link ? '<a href="' + link.u + '" target="_blank" rel="noopener">open \u2197</a>' : "") +
+        "</div>";
+    });
+    host.innerHTML = html;
+  }
+
+  /* Anything sitting in Shipped without a completion date can never age out —
+     doneAge() returns 0 and it stays for ever. Give it one so the clock starts. */
+  function stampUndatedDone() {
+    var changed = false;
+    resolved().forEach(function (c) {
+      if (c.col === "done" && !c.doneISO) {
+        touchDone(c.id, "done");
+        changed = true;
+      }
+    });
+    if (changed) save();
+  }
+
+  /* Anything week-relative has to be computed, or it silently rots. The column
+     said "Deadline Friday 7 August" for a week after that Friday passed. */
+  function weekLabels() {
+    var now = new Date();
+    var dow = (now.getDay() + 6) % 7;                 // 0 = Monday
+    var mon = new Date(now); mon.setDate(now.getDate() - dow);
+    var sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+    var fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+
+    var d = function (x) { return x.toLocaleDateString(undefined, { day: "numeric" }); };
+    var dm = function (x) { return x.toLocaleDateString(undefined, { day: "numeric", month: "short" }); };
+
+    var col = COLS.filter(function (c) { return c.id === "week"; })[0];
+    if (col) {
+      col.sub = dow > 4 ? "Was due by Friday " + d(fri) : "Due by Friday " + d(fri);
+    }
+
+    var eb = document.querySelector(".eyebrow");
+    if (eb) {
+      var range = mon.getMonth() === sun.getMonth()
+        ? d(mon) + "\u2013" + dm(sun)
+        : dm(mon) + "\u2013" + dm(sun);
+      eb.innerHTML = '<i></i> TicketSwap \u00b7 Partnerships &amp; Lead Gen \u00b7 Week of ' + range;
+    }
+  }
+
+  function render() {
+    weekLabels();
+    stampUndatedDone();
+    var cards = list();
+    var by = {};
+    board.innerHTML = "";
+
+    COLS.forEach(function (col) {
+      var sec = document.createElement("section");
+      sec.className = "col";
+      sec.dataset.col = col.id;
+      sec.style.setProperty("--c", "var(" + col.c + ")");
+      sec.style.setProperty("--c-bg", "var(" + col.c + "-bg)");
+      if (col.id === "done" && state.hide) sec.hidden = true;
+
+      var mine = cards.filter(function (c) { return c.col === col.id; });
+      if (state.top) mine = mine.filter(function (c) { return c.p <= 2; });
+      mine.sort(function (a, b) { return a.p - b.p; });
+      by[col.id] = mine.length;
+
+      var head = document.createElement("div");
+      head.className = "col-h";
+      head.innerHTML = '<h2><span class="dot"></span>' + esc(col.name) + '<span class="n">' + mine.length + "</span></h2>" +
+        '<p class="col-sub">' + esc(col.sub) + "</p>";
+      sec.appendChild(head);
+
+      var stack = document.createElement("div");
+      stack.className = "stack";
+      mine.forEach(function (c, i) { stack.appendChild(cardEl(c, i)); });
+      sec.appendChild(stack);
+
+      var f = document.createElement("div");
+      f.className = "col-f";
+      f.innerHTML = '<button class="add" type="button">+ Card</button>' +
+        (col.id === "done" && mine.length
+          ? '<button class="add archivenow" type="button" data-archive-now="1">' +
+            "Archive these " + mine.length + "</button>"
+          : "");
+      sec.appendChild(f);
+
+      board.appendChild(sec);
+    });
+
+    document.getElementById("sWeek").textContent = by.week;
+    document.getElementById("sBlocked").textContent = by.blocked;
+    document.getElementById("sDone").textContent = by.done;
+    document.getElementById("sP1").textContent = cards.filter(function (c) {
+      return c.p === 1 && c.col !== "done";
+    }).length;
+    document.getElementById("sLate").textContent =
+      cards.filter(function (c) { return daysLate(c) > 0; }).length;
+    renderArchive();
+
+    /* Filters that hide most of the board with no visible sign are how a card
+       "disappears". Always say how many are not being shown, and why. */
+    var total = resolved().length;
+    var shown = COLS.reduce(function (n, col) { return n + (by[col.id] || 0); }, 0);
+    var why = [];
+    if (state.top) why.push("P1 + P2 only");
+    if (state.hide) why.push("Shipped hidden");
+    var archived = resolved().filter(offBoard).length;
+    if (archived) why.push(archived + " in Archive");
+    if (state.gone.length) why.push(state.gone.length + " dismissed");
+    // Merged cards leave the count too, so say so \u2014 a number dropping with no
+    // explanation is exactly what reads as data loss.
+    var nMerged = Object.keys(state.merged || {}).length;
+    if (nMerged) why.push(nMerged + " merged into other cards");
+    var bar = document.getElementById("hiding");
+    if (why.length && (shown < total || nMerged)) {
+      document.getElementById("hidingText").innerHTML =
+        "Showing <b>" + shown + "</b> of <b>" + (total + nMerged) + "</b> cards \u2014 " +
+        esc(why.join(", "));
+      bar.hidden = false;
+    } else {
+      bar.hidden = true;
+    }
+
+    drawDupHint();
+
+    var total = COLS.reduce(function (n, c) { return n + by[c.id]; }, 0) || 1;
+    document.getElementById("bar").innerHTML = COLS.map(function (c) {
+      return '<span style="flex:' + by[c.id] + ' 1 0;background:var(' + c.c + ')"></span>';
+    }).join("");
+    document.getElementById("key").innerHTML = COLS.map(function (c) {
+      return "<b><i style=\"background:var(" + c.c + ")\"></i>" + esc(c.name) +
+        " <em>" + by[c.id] + " · " + Math.round((by[c.id] / total) * 100) + "%</em></b>";
+    }).join("");
+  }
+
+  function setPri(id, v) {
+    state.pri[id] = v;
+    save();
+    render();
+    var el = board.querySelector('.card[data-id="' + id + '"]');
+    if (el) el.focus();
+  }
+
+  function move(id, dir) {
+    var c = list().filter(function (x) { return x.id === id; })[0];
+    if (!c) return;
+    var ids = COLS.map(function (x) { return x.id; });
+    var j = Math.max(0, Math.min(ids.length - 1, ids.indexOf(c.col) + dir));
+    if (ids[j] === c.col) return;
+    state.moves[id] = ids[j];
+    touchDone(id, ids[j]);
+    save();
+    render();
+    var again = board.querySelector('.card[data-id="' + id + '"]');
+    if (again) again.focus();
+  }
+
+  /* --- drag and drop --- */
+  var dragging = null;
+
+  board.addEventListener("dragstart", function (e) {
+    var card = e.target.closest(".card");
+    if (!card) return;
+    dragging = card.dataset.id;
+    card.classList.add("drag");
+    e.dataTransfer.effectAllowed = "move";
+    try { e.dataTransfer.setData("text/plain", dragging); } catch (x) {}
+  });
+
+  board.addEventListener("dragend", function () {
+    dragging = null;
+    Array.prototype.forEach.call(board.querySelectorAll(".drag"), function (n) { n.classList.remove("drag"); });
+    Array.prototype.forEach.call(board.querySelectorAll(".over"), function (n) { n.classList.remove("over"); });
+  });
+
+  board.addEventListener("dragover", function (e) {
+    if (!dragging) return;
+    var col = e.target.closest(".col");
+    if (!col) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    Array.prototype.forEach.call(board.querySelectorAll(".over"), function (n) {
+      if (n !== col) n.classList.remove("over");
+    });
+    col.classList.add("over");
+  });
+
+  board.addEventListener("dragleave", function (e) {
+    var col = e.target.closest(".col");
+    if (col && !col.contains(e.relatedTarget)) col.classList.remove("over");
+  });
+
+  board.addEventListener("drop", function (e) {
+    if (!dragging) return;
+    var col = e.target.closest(".col");
+    if (!col) return;
+    e.preventDefault();
+    state.moves[dragging] = col.dataset.col;
+    touchDone(dragging, col.dataset.col);
+    save();
+    render();
+  });
+
+  /* --- title editing --- */
+  function edit(h3) {
+    var card = h3.closest(".card");
+    var id = card.dataset.id;
+    var before = h3.textContent;
+    h3.contentEditable = "true";
+    h3.focus();
+    var r = document.createRange();
+    r.selectNodeContents(h3);
+    var s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(r);
+
+    function done(keep) {
+      if (h3.contentEditable !== "true") return;
+      h3.contentEditable = "false";
+      var text = h3.textContent.trim();
+      if (!keep || !text) {
+        if (!text && before === "New card") { state.gone.push(id); save(); render(); return; }
+        h3.textContent = before;
+        return;
+      }
+      if (text === before.trim()) return; /* unchanged — skip the re-render */
+      var own = state.added.filter(function (c) { return c.id === id; })[0];
+      if (own) own.title = text;
+      else { state.titles = state.titles || {}; state.titles[id] = text; }
+      save();
+      render();
+    }
+
+    h3.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter") { ev.preventDefault(); done(true); }
+      if (ev.key === "Escape") { ev.preventDefault(); done(false); }
+    });
+    h3.addEventListener("blur", function () { done(true); }, { once: true });
+  }
+
+  function editItem(span) {
+    var card = span.closest(".card");
+    var id = card.dataset.id;
+    var i = Number(span.dataset.i);
+    var before = span.textContent;
+    span.contentEditable = "true";
+    span.focus();
+    var r = document.createRange();
+    r.selectNodeContents(span);
+    var s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(r);
+
+    function done(keep) {
+      if (span.contentEditable !== "true") return;
+      span.contentEditable = "false";
+      var text = span.textContent.trim();
+      if (!keep) { span.textContent = before; return; }
+      if (text === before.trim()) return; /* unchanged — don't re-render under the next click */
+      var m = materialise(id);
+      if (!m[i]) return;
+      if (!text) m.splice(i, 1);
+      else m[i] = { t: text, ok: m[i].ok };
+      settle(id);
+    }
+
+    span.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter") { ev.preventDefault(); done(true); }
+      if (ev.key === "Escape") { ev.preventDefault(); done(false); }
+    });
+    span.addEventListener("blur", function () { done(true); }, { once: true });
+  }
+
+  /* Only editable text needs this — a draggable ancestor otherwise swallows the
+     click that places the caret. Dates are buttons now, so they are unaffected. */
+  board.addEventListener("mousedown", function (e) {
+    var t = e.target.closest(".txt, .c-title");
+    if (t) { var c = t.closest(".card"); if (c) c.draggable = false; }
+  });
+  board.addEventListener("mouseup", function (e) {
+    var c = e.target.closest(".card");
+    if (c && !c.querySelector('[contenteditable="true"]')) c.draggable = true;
+  });
+
+  board.addEventListener("dblclick", function (e) {
+    var txt = e.target.closest(".txt");
+    if (txt) { editItem(txt); return; }
+    var h3 = e.target.closest(".c-title");
+    if (h3) edit(h3);
+  });
+
+  /* Dates are edited through a prompt rather than <input type="date">.
+     Three attempts at an inline picker were defeated by the drag machinery;
+     a prompt cannot lose that race, and works identically in both views. */
+  function askDate(kind, id, current) {
+    var label = kind === "due" ? "Due date" : "Finished on";
+    var answer = window.prompt(
+      label + " for this card.\n\nFormat YYYY-MM-DD, e.g. 2026-08-21.\nLeave blank to clear it.",
+      current || "");
+    if (answer === null) return;                       // cancelled
+    answer = answer.trim();
+    var store = kind === "due" ? state.due : state.done;
+    if (!answer) {
+      delete store[id];
+    } else if (/^\d{4}-\d{2}-\d{2}$/.test(answer) && !isNaN(new Date(answer + "T12:00:00"))) {
+      store[id] = answer;
+    } else {
+      window.alert("That is not a date I can read. Use YYYY-MM-DD, for example 2026-08-21.");
+      return;
+    }
+    save();
+    render();
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-setdate]");
+    if (!b) return;
+    var host = b.closest("[data-id]");
+    if (!host) return;
+    e.preventDefault();
+    askDate(b.getAttribute("data-setdate"), host.dataset.id, b.getAttribute("data-value") || "");
+  });
+
+  board.addEventListener("click", function (e) {
+    var add = e.target.closest(".add");
+    if (add) {
+      var col = add.closest(".col").dataset.col;
+      var id = "own-" + state.added.length + "-" + Math.floor(performance.now()).toString(36);
+      state.added.push({ id: id, col: col, tag: "Own card", title: "New card", plain: true, checks: [] });
+      save();
+      render();
+      var t = board.querySelector('.card[data-id="' + id + '"] .c-title');
+      if (t) edit(t);
+      return;
+    }
+    var itxt = e.target.closest('[data-act="itxt"]');
+    if (itxt) {
+      if (itxt.contentEditable !== "true") editItem(itxt);
+      return;
+    }
+
+    var idel = e.target.closest('[data-act="idel"]');
+    if (idel) {
+      var did = idel.closest(".card").dataset.id;
+      var dm = materialise(did);
+      dm.splice(Number(idel.dataset.i), 1);
+      settle(did);
+      return;
+    }
+
+    var tick = e.target.closest('[data-act="tick"]');
+    if (tick) {
+      var tid = tick.closest(".card").dataset.id;
+      var m = materialise(tid);
+      var i = Number(tick.dataset.i);
+      if (m[i]) m[i].ok = !m[i].ok;
+      settle(tid);
+      return;
+    }
+
+    var plus = e.target.closest('[data-act="additem"]');
+    if (plus) {
+      var aid = plus.closest(".card").dataset.id;
+      var arr = materialise(aid);
+      arr.push({ t: "New item", ok: false });
+      settle(aid);
+      var fresh = board.querySelector('.card[data-id="' + aid + '"] .txt[data-i="' + (arr.length - 1) + '"]');
+      if (fresh) editItem(fresh);
+      return;
+    }
+
+    var pri = e.target.closest('[data-act="pri"]');
+    if (pri) {
+      var pk = pri.closest(".card").querySelector(".pick");
+      pk.hidden = !pk.hidden;
+      return;
+    }
+    var set = e.target.closest('[data-act="set"]');
+    if (set) {
+      setPri(set.closest(".card").dataset.id, Number(set.dataset.v));
+      return;
+    }
+    var um = e.target.closest('[data-act="unmerge"]');
+    if (um) { unmerge(um.dataset.mid); return; }
+
+    var b = e.target.closest(".ctl button");
+    if (!b) return;
+    var card = b.closest(".card");
+    if (b.dataset.a === "l") move(card.dataset.id, -1);
+    else if (b.dataset.a === "r") move(card.dataset.id, 1);
+    else if (b.dataset.a === "m") pickMerge(card.dataset.id);
+    else { state.gone.push(card.dataset.id); save(); render(); }
+  });
+
+  /* Spot likely duplicates so they can be merged, rather than waiting to be
+     noticed. Word overlap on the significant words only: "Add HubSpot properties
+     for PAAS OVK" and "Add the PAAS OVK properties in HubSpot" share four. It
+     only ever suggests — nothing is merged without two clicks. */
+  var STOP = { with: 1, from: 1, that: 1, this: 1, into: 1, they: 1, them: 1, will: 1,
+               have: 1, been: 1, also: 1, more: 1, than: 1, then: 1, when: 1, what: 1,
+               about: 1, there: 1, their: 1, would: 1, could: 1, should: 1 };
+
+  function words(t) {
+    var seen = {}, out = [];
+    String(t).replace(/<[^>]+>/g, " ").toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ").split(/\s+/).forEach(function (w) {
+        if (w.length > 3 && !STOP[w] && !seen[w]) { seen[w] = 1; out.push(w); }
+      });
+    return out;
+  }
+
+  /* Deliberately strict, and measured against the real board rather than guessed.
+     Plain word overlap was useless here: "HubSpot", "update", "review" and
+     "properties" each appear in a third of the titles, so unrelated cards scored
+     as high as related ones — "Investigate why team wasn't tagged" matched "Add
+     new inbound leads" on 0.5. So words are weighted by how rare they are across
+     the board, a pair needs at least one genuinely rare shared word, and very
+     short titles are skipped because two words matching two words is always 100%.
+
+     Tuned so it finds nothing in the current 44 cards — none of them are actually
+     duplicates. It stays quiet until something really does arrive twice, which is
+     the only behaviour worth having: a suggester that cries wolf gets ignored. */
+  function dupPairs() {
+    var cs = list().filter(function (c) { return c.col !== "done"; });
+    var toks = cs.map(function (c) { return words(c.title); });
+
+    var df = {};
+    toks.forEach(function (ws) { ws.forEach(function (w) { df[w] = (df[w] || 0) + 1; }); });
+    var n = Math.max(cs.length, 2);
+    var idf = function (w) { return Math.log(n / (df[w] || 1)); };
+    var mass = function (ws) {
+      return ws.reduce(function (s, w) { return s + idf(w); }, 0);
+    };
+
+    var pairs = [];
+    for (var i = 0; i < cs.length; i++) {
+      for (var j = i + 1; j < cs.length; j++) {
+        var a = toks[i], b = toks[j];
+        if (a.length < 3 || b.length < 3) continue;
+        var shared = a.filter(function (w) { return b.indexOf(w) !== -1; });
+        if (shared.length < 2) continue;
+        // At least one word that is not board-wide boilerplate.
+        var rare = shared.some(function (w) { return (df[w] || 0) <= 3; });
+        if (!rare) continue;
+        var denom = Math.min(mass(a), mass(b));
+        if (denom > 0 && mass(shared) / denom >= 0.7) pairs.push([cs[i].id, cs[j].id]);
+      }
+    }
+    return pairs;
+  }
+
+  var dupShown = false;
+
+  function drawDupHint() {
+    var pairs = dupPairs(), el = document.getElementById("dupbar");
+    if (!pairs.length) { el.hidden = true; dupShown = false; return; }
+    document.getElementById("dupText").innerHTML =
+      "<b>" + pairs.length + "</b> possible duplicate " +
+      (pairs.length === 1 ? "pair" : "pairs") + " — merge with <b>⧉</b> to keep one card " +
+      "carrying both source links.";
+    el.hidden = false;
+    document.getElementById("dupShow").textContent = dupShown ? "Hide" : "Show me";
+    if (dupShown) {
+      var ids = {};
+      pairs.forEach(function (p) { ids[p[0]] = 1; ids[p[1]] = 1; });
+      Object.keys(ids).forEach(function (id) {
+        var c = board.querySelector('.card[data-id="' + id + '"]');
+        if (c) c.classList.add("dup");
+      });
+    }
+  }
+
+  document.getElementById("dupShow").addEventListener("click", function () {
+    dupShown = !dupShown;
+    if (!dupShown) {
+      [].forEach.call(board.querySelectorAll(".card.dup"), function (c) { c.classList.remove("dup"); });
+    }
+    drawDupHint();
+  });
+
+  /* Merging takes two clicks: ⧉ on the duplicate, then ⧉ on the card to keep.
+     Both are plain button clicks — the same mechanism as ← → × , which work
+     reliably on a draggable card, unlike anything needing a caret or a picker. */
+  var mergeFrom = null;
+
+  function mergeBanner(msg) {
+    var el = document.getElementById("mergebar");
+    el.hidden = !msg;
+    if (msg) el.querySelector("span").innerHTML = msg;
+    document.body.classList.toggle("merging", !!msg);
+  }
+
+  function pickMerge(id) {
+    if (!mergeFrom) {
+      mergeFrom = id;
+      var c = resolved().filter(function (x) { return x.id === id; })[0];
+      mergeBanner("Merging <b>" + esc(String((c && c.title) || id).replace(/<[^>]+>/g, "")) +
+        "</b> — now click <b>⧉</b> on the card to keep it on.");
+      return;
+    }
+    if (mergeFrom === id) { mergeFrom = null; mergeBanner(""); return; }   // clicked itself: cancel
+    doMerge(mergeFrom, id);
+    mergeFrom = null;
+    mergeBanner("");
+  }
+
+  function doMerge(loserId, winnerId) {
+    // Merging into something that is itself merged would build a chain that is
+    // hard to reason about — point at the card actually on screen instead.
+    winnerId = mergeRoot(winnerId);
+    if (loserId === winnerId) return;
+
+    var all = everyCard(), byId = {};
+    all.forEach(function (c) { byId[c.id] = c; });
+    var loser = byId[loserId], winner = byId[winnerId];
+    if (!loser || !winner) return;
+
+    /* The checklist is combined once, here, and stored as the winner's own items.
+       Doing it at merge time rather than on every render means ticking an item
+       cannot make the list grow, and the text is deduped so re-merging is safe. */
+    var have = {}, combined = itemsOf(winner).slice();
+    combined.forEach(function (k) { have[String(k.t).toLowerCase().trim()] = 1; });
+    itemsOf(loser).forEach(function (k) {
+      var key = String(k.t).toLowerCase().trim();
+      if (!have[key]) { have[key] = 1; combined.push({ t: k.t, ok: !!k.ok }); }
+    });
+    state.items[winnerId] = combined;
+
+    state.merged[loserId] = winnerId;
+    // Anything the sync later writes about the duplicate still lands on its own
+    // id, and the fold picks it up on the next render — nothing needs migrating.
+    save();
+    render();
+  }
+
+  function unmerge(id) {
+    if (!state.merged[id]) return;
+    delete state.merged[id];
+    save();
+    render();
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && mergeFrom) { mergeFrom = null; mergeBanner(""); }
+  });
+  document.getElementById("mergeCancel").addEventListener("click", function () {
+    mergeFrom = null;
+    mergeBanner("");
+  });
+
+  board.addEventListener("keydown", function (e) {
+    var card = e.target.closest(".card");
+    if (!card || card.querySelector('[contenteditable="true"]')) return;
+    if (e.key === "ArrowLeft") { e.preventDefault(); move(card.dataset.id, -1); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); move(card.dataset.id, 1); }
+    else if (e.key === "Enter") { e.preventDefault(); edit(card.querySelector(".c-title")); }
+    else if (e.key >= "1" && e.key <= "5") { e.preventDefault(); setPri(card.dataset.id, Number(e.key)); }
+  });
+
+  var tabBoard = document.getElementById("tabBoard");
+  var tabArchive = document.getElementById("tabArchive");
+  function drawGaps(items) {
+    var box = document.getElementById("gaps");
+    var list = document.getElementById("gapList");
+    if (!box || !list) return;
+    if (!items.length) { box.hidden = true; return; }
+    list.innerHTML = items.map(function (m) {
+      return '<a href="' + esc(m.url) + '" target="_blank" rel="noopener"><b>' +
+        esc(m.day) + " " + esc(m.time) + "</b>" + esc(m.title) + "</a>";
+    }).join("");
+    box.hidden = false;
+  }
+
+  function drawAgenda(items) {
+    var nav = document.querySelector(".agenda");
+    if (!nav) return;
+    if (!items.length) { nav.hidden = true; return; }
+    var html = '<span class="agenda-k">Agenda</span>';
+    items.forEach(function (e) {
+      var past = new Date(e.iso).getTime() < Date.now();
+      html += '<a class="ev' + (past || e.declined ? " past" : "") + '" target="_blank" rel="noopener" href="' +
+        esc(e.url) + '"><span class="ev-day">' + esc(e.day) + "<b>" + esc(e.time) + "</b></span>" +
+        '<span class="ev-t">' + esc(e.title) + (e.declined ? " \u00b7 declined" : "") + "</span></a>";
+    });
+    nav.innerHTML = html;
+  }
+
+  /* Ask the board. Answers strictly from the cards on screen — it is a reader,
+     not an agent: it never changes anything. Disco's AI can be slow to start
+     (measured 45s to first token), so show elapsed time and stream if possible. */
+  var ASK_SYSTEM = [
+    "You answer questions about Joris's work board. Use ONLY the SNAPSHOT provided.",
+    "Never invent a card, a date or a name. If the snapshot does not say, say so.",
+    "When asked to group or write something up, produce something he can paste",
+    "straight into Slack: *single asterisks* for bold, plain hyphen bullets, no",
+    "markdown headings, no tables. Reference cards by their title. Be concrete —",
+    "name the people and the systems the data names. Keep it under 200 words",
+    "unless asked for more. No preamble like 'Here is'.",
+    // Answers were listing the items and then saying the same thing again in a
+    // closing line, which reads as the board showing everything twice.
+    "Mention each card exactly once. Never restate, recap or count up items you",
+    "have already listed, and never end with a summary sentence about the list.",
+    // The priority belongs on the line itself — it used to appear only in that recap.
+    "Start every bullet with the card's priority — '- P2 Update Lookerboards…' —",
+    "and order each list P1 first, P5 last.",
+  ].join(" ");
+
+  function snapshot() {
+    var lines = resolved().map(function (c) {
+      var late = daysLate(c), soon = daysUntil(c);
+      return [
+        "- " + (c.plain ? c.title : c.title.replace(/<[^>]+>/g, "")),
+        "col=" + c.col,
+        "P" + c.p,
+        c.tag ? "source=" + c.tag : "",
+        c.dueISO ? "due=" + c.dueISO : "",
+        late > 0 ? late + "d late" : (soon !== null && soon <= 3 ? "due in " + soon + "d" : ""),
+        c.blockedDays ? "waiting " + c.blockedDays + "d" : "",
+        c.doneISO ? "finished=" + c.doneISO : "",
+        (c.ck && c.ck.length) ? (c.ck.filter(function (k) { return k.ok; }).length +
+          "/" + c.ck.length + " done") : "",
+      ].filter(Boolean).join(" | ");
+    });
+    return "Today is " + new Date().toISOString().slice(0, 10) + ".\n" +
+      "Columns: todo, week (due this week), doing, blocked, later, done.\n\n" +
+      lines.join("\n");
+  }
+
+  /* Match a typed question to a pre-computed briefing. Exact question first, then
+     the id as a keyword, so "group all the HubSpot ones" still finds "hubspot".
+     Anything else falls through to the live call. */
+  function preAnswer(q, id) {
+    var n = String(q || "").toLowerCase().trim();
+    if (!BRIEF.length) return null;
+    if (id) {
+      var byId = BRIEF.filter(function (b) { return b.id === id; })[0];
+      if (byId) return byId;
+    }
+    if (!n) return null;
+    var hit = BRIEF.filter(function (b) {
+      return String(b.question || "").toLowerCase().trim() === n;
+    })[0];
+    if (hit) return hit;
+    return BRIEF.filter(function (b) {
+      return b.id && n.indexOf(b.id) !== -1;
+    })[0] || null;
+  }
+
+  function ask(q, briefId) {
+    var out = document.getElementById("askOut");
+    var foot = document.getElementById("askFoot");
+    var meta = document.getElementById("askMeta");
+    var go = document.getElementById("askGo");
+    if (!q || !q.trim()) return;
+
+    /* The sync already answered the standing questions on the Mac, where the
+       API key lives and a reply takes 3s rather than Disco's 45s. If this
+       question is one of them, show that answer straight away. */
+    var pre = preAnswer(q, briefId);
+    if (pre) {
+      out.hidden = false;
+      out.textContent = pre.answer;
+      meta.textContent = "pre-computed by the sync · instant";
+      foot.hidden = false;
+      return;
+    }
+
+    if (!(window.disco && disco.ai && typeof disco.ai.chat === "function")) {
+      out.hidden = false;
+      out.textContent = "The Disco AI runtime isn't available on this page, so I can't answer here.";
+      return;
+    }
+
+    out.hidden = false;
+    foot.hidden = true;
+    go.disabled = true;
+    var t0 = Date.now();
+    out.textContent = "Thinking… (Disco's AI can take up to a minute to start)";
+    var tick = setInterval(function () {
+      if (!streamed) out.textContent = "Thinking… " +
+        Math.round((Date.now() - t0) / 1000) + "s";
+    }, 1000);
+
+    var streamed = "";
+    var done = function (text, note) {
+      clearInterval(tick);
+      go.disabled = false;
+      out.textContent = text || "No answer came back — try again.";
+      meta.textContent = (note || "") + " · " + Math.round((Date.now() - t0) / 1000) + "s";
+      foot.hidden = false;
+    };
+
+    var timer = setTimeout(function () {
+      done(streamed || "", "timed out after 90s");
+    }, 90000);
+
+    disco.ai.chat(
+      [{ role: "user", content: "SNAPSHOT:\n" + snapshot() + "\n\nQUESTION: " + q }],
+      { system: ASK_SYSTEM, onToken: function (t) {
+          streamed += t; out.textContent = streamed; } }
+    ).then(function (r) {
+      clearTimeout(timer);
+      done(String(r || "").trim() || streamed.trim(), "answered from " + resolved().length + " cards");
+    }).catch(function (e) {
+      clearTimeout(timer);
+      done(streamed.trim(), "failed: " + String(e && e.message || e).slice(0, 70));
+    });
+  }
+
+  document.getElementById("askGo").addEventListener("click", function () {
+    ask(document.getElementById("askQ").value);
+  });
+  document.getElementById("askQ").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") ask(e.target.value);
+  });
+  document.querySelector(".ask-chips").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-ask]");
+    if (!b) return;
+    document.getElementById("askQ").value = b.getAttribute("data-ask");
+    // The chips map to a briefing by id, so a reworded chip still hits the
+    // instant answer instead of quietly falling back to the 45s live call.
+    ask(b.getAttribute("data-ask"), b.getAttribute("data-brief"));
+  });
+  document.getElementById("askCopy").addEventListener("click", function () {
+    var t = document.getElementById("askOut").textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(t).catch(function () {});
+  });
+
+  function showTab(which) {
+    var arch = which === "archive";
+    ["board", "archive"].forEach(function (id) {
+      document.getElementById(id).hidden = (id === "board") ? arch : !arch;
+    });
+    // The stats, ribbon and agenda are all about open work — irrelevant here.
+    [document.querySelector(".stats"), document.querySelector(".ribbon"),
+     document.querySelector(".agenda"), document.getElementById("health"),
+     document.getElementById("gaps"), document.querySelector(".ask")]
+      .forEach(function (el) { if (el) el.hidden = arch; });
+    tabBoard.classList.toggle("is-on", !arch);
+    tabArchive.classList.toggle("is-on", arch);
+    tabBoard.setAttribute("aria-pressed", String(!arch));
+    tabArchive.setAttribute("aria-pressed", String(arch));
+  }
+  tabBoard.addEventListener("click", function () { showTab("board"); });
+  tabArchive.addEventListener("click", function () { showTab("archive"); });
+
+  /* Clear the column now. An explicit flag, not a back-dated completion date —
+     faking the date would corrupt the record and the sheet. */
+  board.addEventListener("click", function (e) {
+    if (!e.target.closest("[data-archive-now]")) return;
+    var shipped = resolved().filter(function (c) { return c.col === "done"; });
+    if (!shipped.length) return;
+    if (!window.confirm("Move " + shipped.length +
+        " finished card(s) to the Archive tab?\n\nNothing is deleted, and their " +
+        "finish dates are unchanged.")) return;
+    shipped.forEach(function (c) { state.arch[c.id] = true; });
+    save();
+    render();
+  });
+
+  document.getElementById("undo").addEventListener("click", function () {
+    var h = history();
+    if (!h.length) { window.alert("Nothing to undo — no earlier state stored yet."); return; }
+    var prev = h.shift();
+    try { window.localStorage.setItem(HKEY, JSON.stringify(h)); } catch (e) {}
+    state = prev.blob;
+    if (ok) { try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+    remoteSave();
+    render();
+    window.alert("Stepped back to the state from " + new Date(prev.at).toLocaleTimeString() +
+      ".\n" + h.length + " earlier version(s) still available.");
+  });
+
+  document.getElementById("export").addEventListener("click", function () {
+    var text = JSON.stringify({ exportedAt: new Date().toISOString(), state: state }, null, 1);
+    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(function () {});
+    var b = new Blob([text], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = "todo-board-state.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById("showAll").addEventListener("click", function () {
+    state.top = false;
+    state.hide = false;
+    state.gone = [];                      // un-dismiss, without touching any edits
+    topBtn.setAttribute("aria-pressed", "false");
+    topBtn.textContent = "P1 + P2 only";
+    hide.setAttribute("aria-pressed", "false");
+    hide.textContent = "Hide shipped";
+    save();
+    render();
+    showTab("board");
+  });
+
+  var topBtn = document.getElementById("filterTop");
+  topBtn.addEventListener("click", function () {
+    state.top = !state.top;
+    topBtn.setAttribute("aria-pressed", String(state.top));
+    topBtn.textContent = state.top ? "All priorities" : "P1 + P2 only";
+    save();
+    render();
+  });
+  if (state.top) {
+    topBtn.setAttribute("aria-pressed", "true");
+    topBtn.textContent = "All priorities";
+  }
+
+  var hide = document.getElementById("hide");
+  hide.addEventListener("click", function () {
+    state.hide = !state.hide;
+    hide.setAttribute("aria-pressed", String(state.hide));
+    hide.textContent = state.hide ? "Show shipped" : "Hide shipped";
+    save();
+    render();
+  });
+  if (state.hide) {
+    hide.setAttribute("aria-pressed", "true");
+    hide.textContent = "Show shipped";
+  }
+
+  document.getElementById("reset").addEventListener("click", function () {
+    state = { moves: {}, added: [], gone: [], titles: {}, pri: {}, items: {}, auto: {},
+              done: {}, due: {}, arch: {}, merged: {}, hide: false, top: false };
+    hide.setAttribute("aria-pressed", "false");
+    hide.textContent = "Hide shipped";
+    topBtn.setAttribute("aria-pressed", "false");
+    topBtn.textContent = "P1 + P2 only";
+    save();
+    render();
+  });
+
+  render();
+  window.setTimeout(function () { board.classList.add("booted"); }, 1400);
+
+  /* ?debug — one block to paste back when something looks wrong, instead of
+     me guessing at symptoms I cannot see. */
+  if (/[?&]debug/.test(location.search)) {
+    var d = document.createElement("pre");
+    d.className = "debugbox";
+    document.querySelector(".wrap").appendChild(d);
+    var paint = function () {
+      var all = resolved();
+      d.textContent = JSON.stringify({
+        builtIn: CARDS.length, synced: SLACK.length, added: (state.added || []).length,
+        totalResolved: all.length,
+        onBoard: all.filter(function (c) { return !offBoard(c); }).length,
+        inArchive: all.filter(inArchive).length,
+        filters: { p1p2Only: !!state.top, shippedHidden: !!state.hide,
+                   dismissed: (state.gone || []).length },
+        edits: { moves: Object.keys(state.moves || {}).length,
+                 priorities: Object.keys(state.pri || {}).length,
+                 checklists: Object.keys(state.items || {}).length,
+                 doneDates: Object.keys(state.done || {}).length,
+                 dueDates: Object.keys(state.due || {}).length },
+        shared: { on: REMOTE.on, recordId: REMOTE.recId, me: REMOTE.me },
+        undoDepth: history().length,
+        byColumn: COLS.reduce(function (o, col) {
+          o[col.id] = all.filter(function (c) { return c.col === col.id; }).length; return o; }, {}),
+      }, null, 1);
+    };
+    paint();
+    setInterval(paint, 4000);
+  }
+
+  remoteLoad().then(function (live) {
+    stamp();
+    if (!live) return;
+    render();
+    var col = stateCol();
+    if (col && col.subscribe) {
+      try {
+        col.subscribe(function () {
+          if (REMOTE.saving) return;              // our own write echoing back
+          remoteLoad().then(function () { render(); });
+        });
+      } catch (e) {}
+    }
+  });
+
+  /* Did the sync actually run? A job that dies writes nothing at all, so a
+     stale timestamp is the signal — that is the failure this is here to catch. */
+  function showHealth(h) {
+    var el = document.getElementById("health");
+    var text = document.getElementById("healthText");
+    var meta = document.getElementById("healthMeta");
+    el.hidden = false;
+    el.className = "health";
+
+    if (!h) {
+      el.className = "health bad";
+      text.innerHTML = "<b>No sync has run yet.</b> The scheduled job is not set up.";
+      return;
+    }
+    var mins = Math.floor((Date.now() - new Date(h.ranAt).getTime()) / 60000);
+    var ago = mins < 1 ? "just now" : mins < 60 ? mins + " min ago"
+      : mins < 1440 ? Math.floor(mins / 60) + "h ago" : Math.floor(mins / 1440) + "d ago";
+    meta.textContent = h.seconds != null ? "ran in " + h.seconds + "s" : "";
+
+    if (!h.ok) {
+      el.className = "health bad";
+      text.innerHTML = "<b>Last sync failed</b> " + esc(ago) + " — " + esc(h.error || "no reason given");
+    } else if (mins > (h.everyMinutes || 5) * 4) {
+      el.className = "health warn";
+      text.innerHTML = "<b>Sync is stale.</b> Last good run " + esc(ago) + ", expected every " +
+        (h.everyMinutes || 5) + " min — the job may not be running.";
+    } else {
+      text.innerHTML = "Slack sync healthy — last run <b>" + esc(ago) + "</b>, " + h.cards +
+        " cards (" + h.open + " open, " + h.done + " closed" +
+        (h.stamped ? ", " + h.stamped + " newly tagged" : "") + ").";
+    }
+  }
+
+  if (window.fetch) {
+    fetch("health.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(showHealth)
+      .catch(function () { showHealth(null); });
+  }
+
+  /* Slack-sourced cards are written by todo_sync.py next to this file. If the
+     fetch fails the board still renders everything else. */
+  if (window.fetch) {
+    fetch("slack.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !Array.isArray(d.cards)) return;
+        SLACK = d.cards;
+        BRIEF = Array.isArray(d.briefings) ? d.briefings : [];
+        if (Array.isArray(d.agenda)) drawAgenda(d.agenda);
+        drawGaps(d.meetingsWithoutNotes || []);
+        render();
+        var el = document.getElementById("synced");
+        if (el && d.generatedAt) {
+          el.textContent = "Slack synced " + d.generatedAt.replace("T", " ").replace("+00:00", " UTC");
+        }
+      })
+      .catch(function () {});
+  }
+})();
+</script>
+<script>
+(function () {
+  var b = document.getElementById("theme");
+  var modes = ["auto", "light", "dark"];
+  var i = 0;
+  try { i = Math.max(0, modes.indexOf(localStorage.getItem("board-theme") || "auto")); } catch (e) {}
+  function apply() {
+    var m = modes[i];
+    if (m === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", m);
+    b.textContent = "Theme: " + m;
+    try { localStorage.setItem("board-theme", m); } catch (e) {}
+  }
+  b.addEventListener("click", function () { i = (i + 1) % modes.length; apply(); });
+  apply();
+})();
+</script>
+</body>
+</html>

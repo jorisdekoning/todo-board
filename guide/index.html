@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Build your own Todo board</title>
+<style>
+  :root {
+    --bg:#F5F6FB; --panel:#fff; --line:#E3E6F0; --ink:#0D101E; --ink-2:#414761;
+    --ink-3:#6A7189; --ink-4:#9AA1BA; --indigo:#3A57DE; --teal:#078A6F;
+    --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --sans: ui-sans-serif,-apple-system,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#080A11; --panel:#141824; --line:#262C3C; --ink:#F1F3FA;
+            --ink-2:#BFC5D9; --ink-3:#8990A8; --ink-4:#646B84; --indigo:#8AA0FF; --teal:#45CFAB; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+         font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 70px; }
+  .eyebrow { font-family:var(--mono); font-size:10px; letter-spacing:.16em;
+             text-transform:uppercase; color:var(--ink-4); margin:0 0 10px; }
+  h1 { margin:0; font-size:clamp(28px,4.4vw,40px); font-weight:780; letter-spacing:-.035em; line-height:1.03; }
+  .lede { color:var(--ink-3); margin:14px 0 0; max-width:60ch; }
+  .row { display:flex; gap:10px; align-items:center; margin:26px 0 0; flex-wrap:wrap; }
+  button {
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:#fff; background:var(--indigo); border:0; border-radius:9px;
+    padding:12px 17px; cursor:pointer;
+  }
+  button.ghost { background:transparent; color:var(--ink-2); border:1px solid var(--line); }
+  button:hover { filter:brightness(1.08); }
+  #said { font-family:var(--mono); font-size:11px; color:var(--teal); opacity:0; transition:opacity .2s; }
+  #said.on { opacity:1; }
+  .how { margin:30px 0 0; padding:16px 18px; background:var(--panel);
+         border:1px solid var(--line); border-radius:12px; }
+  .how h2 { margin:0 0 8px; font-size:13px; }
+  .how ol { margin:0; padding-left:20px; color:var(--ink-2); font-size:14px; }
+  .how li { margin:4px 0; }
+  pre {
+    margin:26px 0 0; padding:20px; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; overflow-x:auto; font-family:var(--mono); font-size:12.5px;
+    line-height:1.6; color:var(--ink-2); white-space:pre-wrap; word-wrap:break-word;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Internal &middot; copy and paste into Claude Code</p>
+  <h1>Build your own Todo board</h1>
+  <p class="lede">
+    A board that fills itself in: react <b>:todo:</b> to a Slack message and it becomes a card,
+    a checkmark closes it, meeting-note action items land on it, and finished work is logged
+    to a spreadsheet. This is the brief &mdash; your Claude builds your version of it.
+  </p>
+
+  <div class="row">
+    <button id="copy">Copy the whole prompt</button>
+    <button class="ghost" id="dl">Download as .md</button>
+    <span id="said">Copied &mdash; paste it as your first message</span>
+  </div>
+
+  <div class="how">
+    <h2>How to use it</h2>
+    <ol>
+      <li>Open Claude Code in a folder you don't mind it working in.</li>
+      <li>Paste this whole thing as your first message.</li>
+      <li>Answer its questions &mdash; it needs to know where your notes, secrets and hosting live.</li>
+      <li>Nothing here contains anyone's keys. It asks you for your own.</li>
+    </ol>
+  </div>
+
+  <pre id="src"># Build me a personal Todo board
+
+Paste this whole file to Claude Code as your first message. It contains no
+credentials — every account-specific value is something Claude will ask you for
+or find for you.
+
+---
+
+## What I want
+
+A single web page that shows everything I&#x27;m working on, so my manager can open a
+link instead of asking me. Cards move between columns, carry a priority, and each
+one links back to wherever it came from.
+
+The important part is that it **fills itself in**. I should not maintain it by
+hand. Specifically:
+
+- I react to a Slack message with a **`:todo:`** emoji → it becomes a card
+- Anyone puts a **✅** on that same message → the card is finished
+- **Action items in my meeting notes** become cards
+- My **calendar** fills a small agenda strip
+- Finished work is appended to a **spreadsheet**, one row each, so I have a record
+  of what I got done this year
+
+A scheduled job does all of this every few minutes, unattended.
+
+## Build it in this order
+
+Each phase is useful on its own — get one working and visible before starting the
+next. Do not build the whole thing before showing me anything.
+
+1. **The board, with my real work on it.** Static data is fine at first. Ask me
+   what I&#x27;m working on, or better: find it. Look for a message where I&#x27;ve written
+   out my projects to my manager, my meeting notes, my calendar. Read those and
+   populate the board from what you find, then show me and let me correct it.
+2. **Host it somewhere I can send a link.** Anything that serves a static file
+   behind my company login. Ask me what my company uses before assuming.
+3. **Slack capture** — the `:todo:` and ✅ loop.
+4. **The scheduled job**, so it runs without me.
+5. **Meeting notes**, then **calendar**, then the **spreadsheet log**.
+
+## Things to work out with me before writing code
+
+Ask me for these; do not guess, and do not put any of them in a file that a git
+repo can see:
+
+- Where my secrets already live (I probably have a `.env` or a keychain entry
+  already — reuse the pattern rather than inventing a new one)
+- Where static sites get hosted at my company
+- My Slack user ID, the exact emoji name I&#x27;ll use, and whether my workspace lets
+  people install Slack apps without an admin approving it
+- Where my meeting notes live, and whether action items are checkboxes, a
+  database column, or just prose
+- Whether I want a dedicated spreadsheet or an existing one
+
+## Traps — these all cost real time to discover
+
+**Slack needs a *user* token, not a bot token.** `search:read` only exists as a
+user scope, and personal todos are mostly in DMs, which a bot user cannot see at
+all. Create an app from a manifest (not a template — the AI-agent and starter
+templates scaffold a bot, events and a server you don&#x27;t need), pick **internal
+integration secret** rather than OAuth, and copy the token beginning `xoxp-`, not
+`xoxb-`. Minimum scopes: `search:read`, `reactions:read`, `reactions:write`. Add
+history scopes only if you want the &quot;did I already reply&quot; filter.
+
+**Do not capture @-mentions naively.** A first attempt at this produced 67 cards
+from 4 real tasks. Mentions mean &quot;someone wants your attention&quot;, not &quot;you took
+this on&quot;. If you do capture them: bound them by date, skip anything I&#x27;ve already
+reacted or replied to, and default them off.
+
+**Add a triage step, and make it the thing that earns its place.** Send each
+candidate to Claude and ask a single question: is this genuinely a piece of work
+for this person? Drop banter, praise, FYIs, broadcasts and bare mentions; rewrite
+what survives into a short imperative title; suggest a priority. On real data this
+went from 67 candidates to 6. Cache the verdict per message id so a job running
+every five minutes costs nothing when nothing has changed — that keeps it to a
+few cents a month.
+
+**Keep the source link prominent.** Triage rewrites titles for readability, which
+can lose the sender&#x27;s exact words. Every card needs an obvious way back to the
+original message, not a small chip in a footer.
+
+**Notion has two traps, both silent.** Action items are often nested *inside* a
+child block, so reading a page&#x27;s top-level children returns one block and finds
+nothing — you must recurse. And Notion&#x27;s filter and search indexes lag freshly
+shared content, so a server-side date filter will silently skip pages that an
+unfiltered fetch returns. Fetch everything and filter client-side. Also: a Notion
+integration only ever sees pages explicitly connected to it, and access cascades
+from a parent — so connect it to the *parent database*, not to individual notes.
+
+**Google service accounts need two separate grants.** Enabling the API in the
+cloud project is not access to my data. The calendar or sheet also has to be
+shared with the service account&#x27;s own email address. The error for the first is
+`accessNotConfigured`; the second is a plain 403. They are different fixes.
+
+**Use launchd, not cron, on a Mac.** cron runs outside the GUI login session, so
+it cannot read the login keychain and cannot post notifications. A job that
+depends on either will fail every single run and tell nobody — that is exactly how
+a previous sync of mine died silently for eight days.
+
+**Make silent failure impossible.** Have every run write a small health file with
+a timestamp, an ok flag and the error text, and show it on the board: green when
+fresh, amber when the last good run is older than a few intervals, red with the
+reason when it failed. A job that dies writes nothing at all, so *staleness is
+the signal* — that is the failure you are actually defending against.
+
+**Stop it re-adding things.** A `:todo:` reaction stays on a message forever, so
+a naive job re-creates that card every run for the rest of the year. Keep a small
+ledger keyed by message id recording first-seen, finished-at, and whether it has
+been written to the spreadsheet. Retire finished items from the board after about
+a week — but move them to an archive view rather than deleting them. Never mark
+something as written to the sheet until the write actually succeeded, so a failure
+retries instead of losing the row.
+
+**Decide where state lives, early.** If card moves are kept in browser storage,
+my manager opening the link sees a different board from mine, and nothing I tick
+can reach the spreadsheet. If the host offers any shared store, use it, and keep
+browser storage only as an offline cache.
+
+**Watch out for `draggable`.** If cards are draggable, the browser&#x27;s drag gesture
+swallows clicks and caret placement on controls inside them — text you meant to
+edit, date pickers that never open. Put the drag on a small grip handle instead of
+the whole card. (I still have an unfixed date-picker bug from exactly this; a
+plain prompt dialog was the reliable workaround.)
+
+**Check my secrets are actually ignored.** Two real findings while building mine:
+a `.env` holding seven live tokens sat in a repo with a GitHub remote and was not
+gitignored, and a service-account key was world-readable at mode 644. Neither had
+been committed, but one `git add -A` would have published them. Check `git
+check-ignore`, check the file mode, and check `git log` to see whether anything is
+already in history — if it is, gitignore is not enough and the credential needs
+rotating.
+
+## Design choices worth keeping
+
+- **Warn before something is late, not after.** A red &quot;4 days late&quot; badge is
+  useless; amber &quot;due tomorrow&quot; is not.
+- **Track waiting separately from working.** The most interesting thing in my own
+  data: every item that took a long time was slow because it was waiting on
+  someone, not because the work was hard. &quot;Median 6 days, most of it waiting&quot; is
+  a far better thing to bring to a review than a count of tickets closed.
+- **Show me meetings that produced no notes.** Nothing otherwise tells you when a
+  meeting left no record, and you find out weeks later.
+- **Resist adding more capture sources.** Email, ticketing systems, task
+  managers — the board&#x27;s value is that it is short enough to look at. More inputs
+  means more for triage to reject, and the failure mode is a board nobody opens.
+
+## How I want you to work
+
+- Show me something on screen early, then iterate. Don&#x27;t disappear for twenty
+  steps.
+- Verify things rather than asserting them. Run the script, load the page, read
+  the response — and if you can&#x27;t verify something, say so plainly instead of
+  implying you did.
+- When you find a real problem in my setup that I didn&#x27;t ask about — an exposed
+  key, a job that has been failing, a stale link — tell me.
+- Use my own words on the cards where you have them. My phrasing of my projects
+  is better than your summary of them.
+</pre>
+</div>
+<script>
+  var text = document.getElementById("src").textContent;
+  var said = document.getElementById("said");
+  function flash() { said.classList.add("on"); setTimeout(function(){ said.classList.remove("on"); }, 2200); }
+  document.getElementById("copy").addEventListener("click", function () {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(flash, fallback);
+    } else { fallback(); }
+    function fallback() {
+      var t = document.createElement("textarea");
+      t.value = text; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); flash(); } catch (e) {}
+      document.body.removeChild(t);
+    }
+  });
+  document.getElementById("dl").addEventListener("click", function () {
+    var b = new Blob([text], { type: "text/markdown" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = "build-your-own-todo-board.md";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+</script>
+</body>
+</html>
